@@ -138,10 +138,10 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 .login-field input::placeholder{color:rgba(255,255,255,.2)}
 .login-error{color:#FC8181;font-size:12px;margin-top:-8px;margin-bottom:12px;display:none}
 .login-error.show{display:block}
-.login-btn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:.01em;margin-top:8px;transition:background .2s,transform .1s}
-.login-btn:hover{background:var(--accent-d)}
-.login-btn:active{transform:scale(.98)}
-.login-btn:disabled{opacity:.6}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border:none;border-radius:var(--r);cursor:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;margin-top:8px;transition:all .2s;box-shadow:0 4px 20px rgba(26,86,232,.35)}
+.login-btn:hover{background:linear-gradient(135deg,#1240C0,#2563EB);box-shadow:0 6px 28px rgba(26,86,232,.45);transform:translateY(-1px)}
+.login-btn:active{transform:scale(.98);box-shadow:0 2px 12px rgba(26,86,232,.3)}
+.login-btn:disabled{opacity:.6;transform:none;box-shadow:none}
 .login-footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}
 
 /* APP */
@@ -190,9 +190,9 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 /* BTN */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--r);font-family:inherit;font-size:13px;font-weight:500;cursor:none;transition:all .15s;border:none;white-space:nowrap}
 .btn svg{width:14px;height:14px}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,86,232,.3)}
-.btn-primary:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,var(--accent) 0%,#3B82F6 100%);color:#fff;box-shadow:0 2px 8px rgba(26,86,232,.22)}
+.btn-primary:hover{background:linear-gradient(135deg,#1240C0 0%,#2563EB 100%);transform:translateY(-1px);box-shadow:0 5px 16px rgba(26,86,232,.35)}
+.btn-primary:active{transform:translateY(0);box-shadow:0 1px 4px rgba(26,86,232,.2)}
 .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--paper3)}
 .btn-ghost:hover{background:var(--paper2);border-color:var(--paper3)}
 .btn-danger{background:var(--red-l);color:var(--red);border:1px solid #FBCAC5}
@@ -216,10 +216,10 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 .stat-card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card.c-blue::before{background:var(--accent)}
-.stat-card.c-green::before{background:var(--green)}
-.stat-card.c-gold::before{background:var(--gold)}
-.stat-card.c-purple::before{background:var(--purple)}
+.stat-card.c-blue::before{background:linear-gradient(90deg,var(--accent),#60A5FA)}
+.stat-card.c-green::before{background:linear-gradient(90deg,var(--green),#34D399)}
+.stat-card.c-gold::before{background:linear-gradient(90deg,var(--gold),#FCD34D)}
+.stat-card.c-purple::before{background:linear-gradient(90deg,var(--purple),#A78BFA)}
 .stat-icon{font-size:22px;margin-bottom:12px}
 .stat-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
 .stat-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
@@ -304,18 +304,30 @@ tr:hover .row-actions{opacity:1}
 
 /* USERS */
 .user-list{display:flex;flex-direction:column;gap:10px}
-.user-row{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);transition:border-color .15s}
-.user-row:hover{border-color:var(--paper3)}
-.user-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-l);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0}
-.user-avatar.adm{background:var(--ink);color:#fff}
+.user-row{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);transition:all .2s}
+.user-row:hover{border-color:var(--accent-l);box-shadow:0 0 0 3px rgba(26,86,232,.06),var(--shadow-sm)}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent-l),#C7D9FF);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(26,86,232,.15)}
+.user-avatar.adm{background:linear-gradient(135deg,var(--ink),#2D3748);color:#fff;border-color:transparent}
 .user-name{font-weight:500;font-size:14px;margin-bottom:2px}
 .user-meta{font-size:11px;color:var(--ink3)}
-.urb{margin-left:auto;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
-.urb-admin{background:var(--ink);color:#fff}
+.urb{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.urb-admin{background:linear-gradient(135deg,var(--ink),#1E2530);color:#fff}
 .urb-user{background:var(--paper2);color:var(--ink3);border:1px solid var(--paper3)}
-.add-user-box{background:var(--accent-l);border:1.5px solid rgba(26,86,232,.2);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;display:none}
+.add-user-box{background:linear-gradient(135deg,var(--accent-l),#F0F5FF);border:1.5px solid rgba(26,86,232,.2);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;display:none}
 .add-user-box.open{display:block;animation:fadeIn .2s ease}
 .add-user-box h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
+
+/* RICERCA iframe wrapper glow */
+#view-ricerca .iframe-wrap {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--paper3);
+  box-shadow: var(--shadow), 0 0 0 4px rgba(26,86,232,.04);
+  transition: box-shadow .3s;
+}
+#view-ricerca .iframe-wrap:hover {
+  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(26,86,232,.07);
+}
 
 /* MODAL */
 .overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
@@ -338,10 +350,13 @@ tr:hover .row-actions{opacity:1}
 .bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
 
 /* LOADING OVERLAY */
-#loading{position:fixed;inset:0;background:var(--ink);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-.ld-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;letter-spacing:-.02em}
-.ld-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+#loading{position:fixed;inset:0;background:var(--ink);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.ld-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#fff;letter-spacing:-.03em;display:flex;align-items:center;gap:12px}
+.ld-logo span{color:var(--accent)}
+.ld-tagline{font-size:13px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase}
+.ld-bar{width:180px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:4px}
+.ld-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#60A5FA);border-radius:2px;animation:ldbar 1.2s ease-in-out infinite}
+@keyframes ldbar{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -366,8 +381,9 @@ tr:hover .row-actions{opacity:1}
 
 <!-- LOADING -->
 <div id="loading">
-  <div class="ld-logo">🌐 WebCRM</div>
-  <div class="ld-spinner"></div>
+  <div class="ld-logo">🌐 Web<span>CRM</span></div>
+  <div class="ld-tagline">Acquisizione clienti siti web</div>
+  <div class="ld-bar"><div class="ld-bar-fill"></div></div>
 </div>
 
 <!-- LOGIN -->
@@ -433,6 +449,10 @@ tr:hover .row-actions{opacity:1}
       <button class="sb-item" onclick="nav('pipeline',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="4" height="16" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/></svg>
         <span>Pipeline</span>
+      </button>
+      <button class="sb-item" onclick="nav('ricerca',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8a3 3 0 0 1 3 3"/></svg>
+        <span>Ricerca Attività</span>
       </button>
       <div class="sb-section admin-only">Amministrazione</div>
       <button class="sb-item admin-only" onclick="nav('utenti',this)">
@@ -602,10 +622,19 @@ tr:hover .row-actions{opacity:1}
       <div class="view" id="view-utenti">
         <div class="page-header"><h2>Gestione utenti</h2><p>Crea e gestisci gli account operatori</p></div>
         <div class="add-user-box" id="add-user-box">
-          <h3>+ Nuovo account operatore</h3>
-          <div class="fg" style="margin-bottom:0">
+          <h3>+ Nuovo account</h3>
+          <div class="fg" style="margin-bottom:14px">
             <div class="field"><label>Nome utente</label><input type="text" id="nu-u" placeholder="es. mario_rossi"></div>
             <div class="field"><label>Password</label><input type="password" id="nu-p" placeholder="min. 6 caratteri"></div>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <div class="field"><label>Ruolo</label>
+              <select id="nu-r">
+                <option value="user">Operatore</option>
+                <option value="admin">Amministratore</option>
+              </select>
+            </div>
+            <div></div>
           </div>
           <div style="display:flex;gap:8px;margin-top:14px">
             <button class="btn btn-primary btn-sm" onclick="creaUtente()">Crea account</button>
@@ -616,6 +645,22 @@ tr:hover .row-actions{opacity:1}
           <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-user-box').classList.toggle('open')">+ Nuovo utente</button>
         </div>
         <div class="user-list" id="user-list"></div>
+      </div>
+
+      <!-- RICERCA ATTIVITÀ -->
+      <div class="view" id="view-ricerca">
+        <div class="page-header">
+          <h2>Ricerca Attività</h2>
+          <p>Trova aziende da contattare nella tua zona</p>
+        </div>
+        <div style="border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--paper3);box-shadow:var(--shadow)">
+          <iframe
+            src="https://find-businesses.vercel.app/"
+            style="width:100%;height:calc(100vh - 210px);border:none;display:block"
+            allow="geolocation"
+            title="Ricerca Attività"
+          ></iframe>
+        </div>
       </div>
 
     </div>
@@ -647,10 +692,43 @@ tr:hover .row-actions{opacity:1}
 <div class="toast" id="toast"><span class="tdot"></span><span id="tmsg"></span></div>
 
 <script>
-// ╔══════════════════════════════════════════════════════╗
-// ║  🔑 INCOLLA QUI LE TUE CREDENZIALI SUPABASE         ║
-// ║  supabase.com → Il tuo progetto → Settings → API   ║
-// ╚══════════════════════════════════════════════════════╝
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  🔑 INCOLLA QUI LE TUE CREDENZIALI SUPABASE                ║
+// ║  supabase.com → Il tuo progetto → Settings → API          ║
+// ║                                                            ║
+// ║  SQL DA ESEGUIRE NEL SQL EDITOR DI SUPABASE:               ║
+// ║                                                            ║
+// ║  -- Tabella aziende (se non esiste già)                    ║
+// ║  create table if not exists aziende (                      ║
+// ║    id uuid default gen_random_uuid() primary key,          ║
+// ║    created_at timestamptz default now(),                   ║
+// ║    settore text, nome_azienda text not null,               ║
+// ║    telefono_email text, stato text,                        ║
+// ║    data_contatto date, data_incontro date,                 ║
+// ║    preventivo numeric, priorita text,                      ║
+// ║    referente text, note text, aggiunto_da text             ║
+// ║  );                                                        ║
+// ║  alter publication supabase_realtime add table aziende;    ║
+// ║  create policy "public" on aziende for all using (true)    ║
+// ║    with check (true);                                      ║
+// ║  alter table aziende enable row level security;            ║
+// ║                                                            ║
+// ║  -- Tabella utenti (NUOVA - esegui questo!)                ║
+// ║  create table if not exists utenti (                       ║
+// ║    id uuid default gen_random_uuid() primary key,          ║
+// ║    created_at timestamptz default now(),                   ║
+// ║    username text unique not null,                          ║
+// ║    password text not null,                                 ║
+// ║    role text default 'user'                                ║
+// ║  );                                                        ║
+// ║  create policy "public" on utenti for all using (true)     ║
+// ║    with check (true);                                      ║
+// ║  alter table utenti enable row level security;             ║
+// ║                                                            ║
+// ║  -- Inserisci l'admin principale                           ║
+// ║  insert into utenti (username, password, role)             ║
+// ║    values ('fillo', '12345678', 'admin');                  ║
+// ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://xjsunwrdqfyjbunddsdc.supabase.co';   // ← Project URL
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhqc3Vud3JkcWZ5amJ1bmRkc2RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDg3NzUsImV4cCI6MjA5MjE4NDc3NX0.HEmNvICyEu1OMPcNrTTb1DLdBYyFkzLbFhOQspdwUGQ'; // ← anon public key
 
@@ -702,14 +780,31 @@ document.addEventListener('mousedown', () => document.body.classList.add('cursor
 document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
 
 // ── STATO LOCALE ──────────────────────────────────────
-const UK = 'webcrm_users_v3';
-let users = JSON.parse(localStorage.getItem(UK) || 'null') || [
-  { username: 'fillo', password: '12345678', role: 'admin', created: new Date().toLocaleDateString('it-IT') }
-];
-const saveU = () => localStorage.setItem(UK, JSON.stringify(users));
-
-let dati = [], sess = JSON.parse(localStorage.getItem('webcrm_sess_v3') || 'null');
+let dati = [], users = [], sess = null;
 let sf = '', sa = true, delId = null, delUI = -1;
+
+// ── SUPABASE: UTENTI ──────────────────────────────────
+async function loadUsers() {
+  const { data, error } = await sb.from('utenti').select('*').order('created_at', { ascending: true });
+  if (error) { console.error('loadUsers:', error); return; }
+  users = data || [];
+}
+
+async function saveNewUser(u, p, role) {
+  const { data, error } = await sb.from('utenti').insert({ username: u, password: p, role }).select().single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function deleteUser(id) {
+  const { error } = await sb.from('utenti').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+async function promoteUser(id, newRole) {
+  const { error } = await sb.from('utenti').update({ role: newRole }).eq('id', id);
+  if (error) throw new Error(error.message);
+}
 
 // ── SUPABASE DB FUNCTIONS ─────────────────────────────
 
@@ -784,25 +879,35 @@ function avviaRealtime() {
 async function doLogin() {
   const u = document.getElementById('li-user').value.trim();
   const p = document.getElementById('li-pass').value;
-  const found = users.find(x => x.username === u && x.password === p);
-  if (!found) { document.getElementById('li-err').classList.add('show'); return; }
-  document.getElementById('li-err').classList.remove('show');
   const btn = document.getElementById('li-btn');
   btn.disabled = true; btn.textContent = 'Connessione…';
-  sess = { username: found.username, role: found.role };
-  localStorage.setItem('webcrm_sess_v3', JSON.stringify(sess));
-  await bootApp();
+  try {
+    await loadUsers();
+    const found = users.find(x => x.username === u && x.password === p);
+    if (!found) {
+      document.getElementById('li-err').classList.add('show');
+      btn.disabled = false; btn.textContent = 'Accedi →';
+      return;
+    }
+    document.getElementById('li-err').classList.remove('show');
+    sess = { id: found.id, username: found.username, role: found.role };
+    await bootApp();
+  } catch(e) {
+    document.getElementById('li-err').textContent = 'Errore connessione. Controlla le chiavi Supabase.';
+    document.getElementById('li-err').classList.add('show');
+  }
   btn.disabled = false; btn.textContent = 'Accedi →';
 }
 
 function doLogout() {
   sess = null;
-  localStorage.removeItem('webcrm_sess_v3');
   try { sb.channel('aziende_rt').unsubscribe(); } catch(e) {}
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('li-pass').value = '';
   document.getElementById('li-user').value = '';
+  // Torna alla dashboard per la prossima sessione
+  nav('dashboard', document.querySelectorAll('.sb-item')[0]);
 }
 
 async function bootApp() {
@@ -827,27 +932,29 @@ async function bootApp() {
 }
 
 // ── INIT ──────────────────────────────────────────────
+// Ogni apertura del sito richiede login — non si ripristina mai la sessione
 window.addEventListener('load', async () => {
-  await new Promise(r => setTimeout(r, 600)); // breve splash
+  await new Promise(r => setTimeout(r, 700));
   document.getElementById('loading').style.display = 'none';
-  if (sess) {
-    await bootApp();
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
-  }
+  sess = null;
+  localStorage.removeItem('webcrm_sess_v3');
+  document.getElementById('login-screen').style.display = 'flex';
 });
 
 // ── NAV ───────────────────────────────────────────────
 const tbT = {
-  dashboard:   ['Dashboard',       'Riepilogo generale'],
-  inserimento: ['Nuova azienda',   'Compila i campi e salva'],
-  tabella:     ['Tabella aziende', 'Lista completa'],
-  pipeline:    ['Pipeline Kanban', 'Vista per stato'],
-  utenti:      ['Gestione utenti', 'Crea e gestisci account'],
+  dashboard:   ['Dashboard',          'Riepilogo generale'],
+  inserimento: ['Nuova azienda',      'Compila i campi e salva'],
+  tabella:     ['Tabella aziende',    'Lista completa'],
+  pipeline:    ['Pipeline Kanban',    'Vista per stato'],
+  utenti:      ['Gestione utenti',    'Crea e gestisci account'],
+  ricerca:     ['Ricerca Attività',   'Trova aziende da contattare'],
 };
 function nav(id, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = ''; });
+  const view = document.getElementById('view-' + id);
+  view.classList.add('active');
+  if (id === 'ricerca') view.style.display = 'block';
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   const t = tbT[id] || ['', ''];
@@ -1039,47 +1146,75 @@ async function doDel() {
 }
 
 // ── USERS ─────────────────────────────────────────────
-// Gli utenti base NON possono modificare altri utenti.
-// Il pulsante elimina appare solo per l'admin.
 function renderUsers() {
   const isAdmin = sess.role === 'admin';
-  document.getElementById('user-list').innerHTML = users.map((u, i) => `
+  document.getElementById('user-list').innerHTML = users.map(u => {
+    const isMe = u.username === sess.username;
+    const isProtected = u.username === 'fillo';
+    const canModify = isAdmin && !isProtected;
+    return `
     <div class="user-row">
       <div class="user-avatar ${u.role === 'admin' ? 'adm' : ''}">${u.username.substring(0,2).toUpperCase()}</div>
-      <div>
-        <div class="user-name">${u.username}</div>
-        <div class="user-meta">Creato: ${u.created || '—'} · ${u.role === 'admin' ? 'Account protetto' : 'Operatore'}</div>
+      <div style="flex:1">
+        <div class="user-name">${u.username}${isMe ? ' <span style="font-size:10px;color:var(--ink4);font-weight:400">(tu)</span>' : ''}</div>
+        <div class="user-meta">Creato: ${u.created_at ? new Date(u.created_at).toLocaleDateString('it-IT') : '—'}</div>
       </div>
       <span class="urb ${u.role === 'admin' ? 'urb-admin' : 'urb-user'}">${u.role === 'admin' ? 'Admin' : 'Operatore'}</span>
-      ${isAdmin && u.username !== 'fillo'
-        ? `<button class="btn btn-danger btn-sm" onclick="askDelU(${i})" style="margin-left:8px">Elimina</button>`
-        : '<div style="width:8px"></div>'}
-    </div>`).join('');
+      ${canModify ? `
+        <div style="display:flex;gap:6px;margin-left:10px">
+          <button class="btn btn-ghost btn-xs" onclick="toggleRole('${u.id}','${u.role}')" title="${u.role === 'admin' ? 'Rimuovi admin' : 'Promuovi ad admin'}">
+            ${u.role === 'admin' ? '↓ Operatore' : '↑ Admin'}
+          </button>
+          <button class="btn btn-danger btn-xs" onclick="askDelU('${u.id}')">✕</button>
+        </div>` : '<div style="width:8px"></div>'}
+    </div>`;
+  }).join('');
 }
 
-function creaUtente() {
-  // Solo admin può creare utenti
+async function toggleRole(id, currentRole) {
+  if (sess.role !== 'admin') { toast('Accesso negato', 'err'); return; }
+  const newRole = currentRole === 'admin' ? 'user' : 'admin';
+  try {
+    await promoteUser(id, newRole);
+    await loadUsers();
+    renderUsers();
+    toast(newRole === 'admin' ? 'Utente promosso ad Admin ✓' : 'Utente retrocesso ad Operatore');
+  } catch(e) { toast('Errore: ' + e.message, 'err'); }
+}
+
+async function creaUtente() {
   if (sess.role !== 'admin') { toast('Accesso negato', 'err'); return; }
   const u = document.getElementById('nu-u').value.trim();
   const p = document.getElementById('nu-p').value;
+  const r = document.getElementById('nu-r').value;
   if (!u) { toast('Inserisci un nome utente', 'err'); return; }
   if (p.length < 6) { toast('Password min. 6 caratteri', 'err'); return; }
   if (users.find(x => x.username === u)) { toast('Username già esistente', 'err'); return; }
-  users.push({ username: u, password: p, role: 'user', created: new Date().toLocaleDateString('it-IT') });
-  saveU(); renderUsers();
-  document.getElementById('nu-u').value = '';
-  document.getElementById('nu-p').value = '';
-  document.getElementById('add-user-box').classList.remove('open');
-  toast('Account creato! Condividi il file con il nuovo utente.');
+  try {
+    await saveNewUser(u, p, r);
+    await loadUsers();
+    renderUsers();
+    document.getElementById('nu-u').value = '';
+    document.getElementById('nu-p').value = '';
+    document.getElementById('add-user-box').classList.remove('open');
+    toast('Account creato! ✓');
+  } catch(e) { toast('Errore: ' + e.message, 'err'); }
 }
 
-function askDelU(i) {
+function askDelU(id) {
   if (sess.role !== 'admin') { toast('Accesso negato', 'err'); return; }
-  delUI = i; document.getElementById('mod-del-u').classList.add('open');
+  delUI = id; document.getElementById('mod-del-u').classList.add('open');
 }
-function doDelUser() {
+async function doDelUser() {
   if (sess.role !== 'admin') { toast('Accesso negato', 'err'); closeM('mod-del-u'); return; }
-  if (delUI >= 0) { users.splice(delUI, 1); saveU(); renderUsers(); toast('Utente eliminato'); }
+  if (delUI) {
+    try {
+      await deleteUser(delUI);
+      await loadUsers();
+      renderUsers();
+      toast('Utente eliminato');
+    } catch(e) { toast('Errore: ' + e.message, 'err'); }
+  }
   closeM('mod-del-u'); delUI = -1;
 }
 
