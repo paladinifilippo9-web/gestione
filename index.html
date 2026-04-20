@@ -300,7 +300,10 @@ tr:hover .row-actions{opacity:1}
 .add-user-box.open{display:block;animation:fadeIn .2s ease}
 .add-user-box h3{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
 
-/* RICERCA iframe wrapper glow */
+/* EF TAB BAR */
+.ef-tab{padding:7px 16px;border-radius:10px;border:none;background:transparent;color:rgba(14,15,17,.45);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:500;cursor:none;transition:all .15s;white-space:nowrap}
+.ef-tab:hover{background:var(--white);color:var(--ink)}
+.ef-tab.active{background:var(--white);color:var(--accent);font-weight:600;box-shadow:0 1px 4px rgba(14,15,17,.1)}
 #view-ricerca .iframe-wrap {
   border-radius: var(--r-lg);
   overflow: hidden;
@@ -644,70 +647,63 @@ tr:hover .row-actions{opacity:1}
 
       <!-- EF PRIVATE DASHBOARD -->
       <div class="view" id="view-ef-private">
-        <div class="page-header">
-          <h2>🛡️ EF Dashboard Privata</h2>
-          <p>Visibile solo a fillo e manu — aziende completate da fillo</p>
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <h2>🛡️ EF Dashboard</h2>
+            <p id="ef-page-sub">Le tue aziende completate e i tuoi guadagni</p>
+          </div>
+          <!-- Tab switcher: visibile solo a fillo e manu -->
+          <div id="ef-tab-bar" style="display:none;background:var(--paper2);border-radius:var(--r-lg);padding:4px;border:1px solid var(--paper3);display:flex;gap:4px;flex-wrap:wrap"></div>
         </div>
 
-        <!-- STAT CARDS EF -->
-        <div class="stats-grid" style="margin-bottom:28px" id="ef-stats"></div>
+        <!-- Dashboard personale (ogni utente) -->
+        <div id="ef-personal-panel">
+          <div class="stats-grid" style="margin-bottom:20px" id="ef-stats-personal"></div>
 
-        <!-- AZIENDE COMPLETATE -->
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-header" style="cursor:none" onclick="toggleSection('ef-aziende-body')">
-            <span class="card-title">🏢 Aziende con sito completato</span>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span id="ef-aziende-cnt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:600">0</span>
-              <span id="ef-aziende-arrow" style="color:var(--ink3);font-size:12px;transition:transform .2s">▼</span>
+          <!-- Calcolo cifre evidenziate -->
+          <div id="ef-calc-panel" style="margin-bottom:20px"></div>
+
+          <!-- Aziende completate (espandibile) -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-header" onclick="toggleSection('ef-az-body')" style="cursor:none">
+              <span class="card-title">🏢 Aziende con sito completato</span>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span id="ef-az-cnt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:600">0</span>
+                <span id="ef-az-arrow" style="color:var(--ink3);font-size:11px">▼</span>
+              </div>
+            </div>
+            <div id="ef-az-body" style="display:none;overflow:auto">
+              <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th>Referente</th><th>Data</th></tr></thead>
+              <tbody id="ef-az-list"></tbody></table>
             </div>
           </div>
-          <div id="ef-aziende-body" style="display:none;overflow:auto">
-            <table>
-              <thead><tr><th>Nome Azienda</th><th>Settore</th><th>Referente</th><th>Data completamento</th></tr></thead>
-              <tbody id="ef-aziende-list"></tbody>
-            </table>
+
+          <!-- Preventivi (espandibile) -->
+          <div class="card">
+            <div class="card-header" onclick="toggleSection('ef-pr-body')" style="cursor:none">
+              <span class="card-title">💶 Preventivi per azienda</span>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span id="ef-pr-tot" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);font-weight:600">€ 0</span>
+                <span id="ef-pr-arrow" style="color:var(--ink3);font-size:11px">▼</span>
+              </div>
+            </div>
+            <div id="ef-pr-body" style="display:none;overflow:auto">
+              <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th style="text-align:right">Preventivo</th></tr></thead>
+              <tbody id="ef-pr-list"></tbody></table>
+            </div>
           </div>
         </div>
 
-        <!-- PREVENTIVI -->
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-header" style="cursor:none" onclick="toggleSection('ef-prev-body')">
-            <span class="card-title">💶 Preventivi per azienda</span>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span id="ef-prev-tot" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);font-weight:600">€ 0</span>
-              <span id="ef-prev-arrow" style="color:var(--ink3);font-size:12px;transition:transform .2s">▼</span>
-            </div>
-          </div>
-          <div id="ef-prev-body" style="display:none;overflow:auto">
-            <table>
-              <thead><tr><th>Nome Azienda</th><th>Settore</th><th style="text-align:right">Preventivo</th></tr></thead>
-              <tbody id="ef-prev-list"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- CALCOLO GUADAGNO -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">📊 Calcolo guadagno netto</span>
-          </div>
-          <div class="card-body">
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-              <div style="background:var(--paper);border-radius:var(--r-lg);padding:20px;border:1px solid var(--paper3);text-align:center">
-                <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Totale preventivi</div>
-                <div id="ef-calc-tot" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--ink)">€ 0</div>
-              </div>
-              <div style="background:linear-gradient(135deg,#FEF0E7,#FDE8D8);border-radius:var(--r-lg);padding:20px;border:1px solid #FBCAC5;text-align:center">
-                <div style="font-size:11px;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Al netto del 20%</div>
-                <div id="ef-calc-80" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--orange)">€ 0</div>
-                <div style="font-size:10px;color:var(--orange);opacity:.7;margin-top:4px">totale × 80%</div>
-              </div>
-              <div style="background:linear-gradient(135deg,var(--green-l),#C6F6D5);border-radius:var(--r-lg);padding:20px;border:1px solid #9AE6B4;text-align:center">
-                <div style="font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Il tuo 35%</div>
-                <div id="ef-calc-35" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--green)">€ 0</div>
-                <div style="font-size:10px;color:var(--green);opacity:.7;margin-top:4px">(totale × 80%) × 35%</div>
-              </div>
-            </div>
+        <!-- Dashboard TOTALE (solo fillo/manu, tab "Totale") -->
+        <div id="ef-totale-panel" style="display:none">
+          <div class="stats-grid" style="margin-bottom:20px" id="ef-stats-totale"></div>
+          <div id="ef-calc-totale" style="margin-bottom:20px"></div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">📋 Riepilogo per utente</span></div>
+            <div style="overflow:auto"><table>
+              <thead><tr><th>Utente</th><th>Aziende completate</th><th style="text-align:right">Tot. Preventivi</th><th style="text-align:right">−20%</th><th style="text-align:right">35% netto</th></tr></thead>
+              <tbody id="ef-totale-list"></tbody>
+            </table></div>
           </div>
         </div>
       </div>
@@ -993,6 +989,7 @@ async function doLogin() {
 
 function doLogout() {
   sess = null;
+  efCurrentUser = null;
   try { sb.channel('aziende_rt').unsubscribe(); } catch(e) {}
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display = 'flex';
@@ -1381,56 +1378,180 @@ function toggleSection(id) {
   if (arrow) arrow.textContent = isHidden ? '▲' : '▼';
 }
 
+// ── EF PRIVATE DASHBOARD ──────────────────────────────
+// Utente attualmente visualizzato nei tab (default = se stesso)
+let efCurrentUser = null;
+
 function renderEFPrivate() {
-  // Solo aziende inserite da fillo con stato "✅ Sito completato"
-  const efDati = dati.filter(r => r.aggiunto_da === 'fillo' && r.stato === '✅ Sito completato');
-  const totPrev = efDati.reduce((s, r) => s + (Number(r.preventivo) || 0), 0);
-  const al80    = totPrev * 0.80;
-  const il35    = al80 * 0.35;
+  const isSupervisor = (sess.username === 'fillo' || sess.username === 'manu');
+  efCurrentUser = efCurrentUser || sess.username;
+
+  // Tab bar: visibile solo a fillo e manu
+  const tabBar = document.getElementById('ef-tab-bar');
+  if (isSupervisor) {
+    // Raccoglie tutti gli utenti non-viewer che hanno almeno 1 azienda completata
+    const eligibleUsers = users.filter(u => u.role !== 'viewer');
+    // Costruisce tab: uno per utente + uno Totale
+    tabBar.style.display = 'flex';
+    tabBar.innerHTML = eligibleUsers.map(u => `
+      <button class="ef-tab ${efCurrentUser === u.username ? 'active' : ''}"
+        onclick="efSwitchTab('${u.username}')">
+        ${u.username === sess.username ? '👤 ' + u.username : u.username}
+      </button>`).join('') +
+      `<button class="ef-tab ${efCurrentUser === '__totale__' ? 'active' : ''}"
+        onclick="efSwitchTab('__totale__')">
+        📊 Totale
+      </button>`;
+  } else {
+    tabBar.style.display = 'none';
+    efCurrentUser = sess.username;
+  }
+
+  if (efCurrentUser === '__totale__') {
+    renderEFTotale();
+  } else {
+    renderEFPersonale(efCurrentUser);
+  }
+}
+
+function efSwitchTab(username) {
+  efCurrentUser = username;
+  renderEFPrivate();
+}
+
+function buildCalcBlock(totPrev, label) {
+  const al80 = totPrev * 0.80;
+  const il35 = al80 * 0.35;
+  const il75 = al80 * 0.75; // bonus: 75% di quello che rimane dopo il 20%
+  const fmt = v => v > 0 ? '€ ' + Math.round(v).toLocaleString('it-IT') : '€ 0';
+  return `
+    <div class="card">
+      <div class="card-header"><span class="card-title">📊 Calcolo guadagni — ${label}</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          <div style="background:var(--paper);border-radius:var(--r-lg);padding:18px;border:1px solid var(--paper3);text-align:center">
+            <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Totale preventivi</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--ink)">${fmt(totPrev)}</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#FEF0E7,#FDE8D8);border-radius:var(--r-lg);padding:18px;border:1px solid #FBCAC5;text-align:center">
+            <div style="font-size:10px;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">−20% (netto)</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--orange)">${fmt(al80)}</div>
+            <div style="font-size:10px;color:var(--orange);opacity:.65;margin-top:4px">totale × 80%</div>
+          </div>
+          <div style="background:linear-gradient(135deg,var(--green-l),#BBF7D0);border-radius:var(--r-lg);padding:18px;border:1px solid #86EFAC;text-align:center">
+            <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">35% del netto</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--green)">${fmt(il35)}</div>
+            <div style="font-size:10px;color:var(--green);opacity:.65;margin-top:4px">netto × 35%</div>
+          </div>
+          <div style="background:linear-gradient(135deg,var(--accent-l),#BFDBFE);border-radius:var(--r-lg);padding:18px;border:1px solid #93C5FD;text-align:center">
+            <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">75% del netto</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--accent)">${fmt(il75)}</div>
+            <div style="font-size:10px;color:var(--accent);opacity:.65;margin-top:4px">netto × 75%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderEFPersonale(username) {
+  document.getElementById('ef-personal-panel').style.display = 'block';
+  document.getElementById('ef-totale-panel').style.display   = 'none';
+
+  const isSelf = username === sess.username;
+  document.getElementById('ef-page-sub').textContent = isSelf
+    ? 'Le tue aziende completate e i tuoi guadagni'
+    : `Aziende completate di ${username}`;
+
+  const miei = dati.filter(r => r.aggiunto_da === username && r.stato === '✅ Sito completato');
+  const tot  = miei.reduce((s, r) => s + (Number(r.preventivo) || 0), 0);
+  const fmt  = v => v > 0 ? '€ ' + v.toLocaleString('it-IT') : '—';
 
   // Stat cards
-  document.getElementById('ef-stats').innerHTML = `
+  document.getElementById('ef-stats-personal').innerHTML = `
     <div class="stat-card c-purple">
       <div class="stat-icon">🏆</div>
-      <div class="stat-val">${efDati.length}</div>
-      <div class="stat-label">Siti completati da fillo</div>
+      <div class="stat-val">${miei.length}</div>
+      <div class="stat-label">Siti completati</div>
     </div>
     <div class="stat-card c-green">
       <div class="stat-icon">💶</div>
-      <div class="stat-val" style="font-size:${totPrev > 99999 ? '18px' : '28px'}">${totPrev > 0 ? '€ ' + totPrev.toLocaleString('it-IT') : '—'}</div>
+      <div class="stat-val" style="font-size:${tot>99999?'16px':'24px'}">${fmt(tot)}</div>
       <div class="stat-label">Preventivi totali</div>
     </div>
     <div class="stat-card c-gold">
       <div class="stat-icon">✨</div>
-      <div class="stat-val" style="font-size:${il35 > 99999 ? '18px' : '28px'}">${il35 > 0 ? '€ ' + Math.round(il35).toLocaleString('it-IT') : '—'}</div>
-      <div class="stat-label">Tuo guadagno (35%)</div>
+      <div class="stat-val" style="font-size:${(tot*.8*.35)>99999?'16px':'24px'}">${tot>0?'€ '+Math.round(tot*.8*.35).toLocaleString('it-IT'):'—'}</div>
+      <div class="stat-label">Il tuo 35%</div>
     </div>`;
 
-  // Lista aziende cliccabile
-  document.getElementById('ef-aziende-cnt').textContent = efDati.length;
-  document.getElementById('ef-aziende-list').innerHTML = efDati.length
-    ? efDati.map(r => `<tr>
-        <td class="td-bold">${r.nome_azienda || '—'}</td>
-        <td class="td-muted">${r.settore || '—'}</td>
-        <td class="td-muted">${r.referente || '—'}</td>
-        <td class="td-mono">${fD(r.data_incontro)}</td>
-      </tr>`).join('')
-    : '<tr><td colspan="4"><div class="empty" style="padding:20px"><p>Nessuna azienda ancora</p></div></td></tr>';
+  // Blocco calcolo cifre
+  document.getElementById('ef-calc-panel').innerHTML = buildCalcBlock(tot, isSelf ? 'le tue aziende' : username);
 
-  // Lista preventivi
-  document.getElementById('ef-prev-tot').textContent = '€ ' + totPrev.toLocaleString('it-IT');
-  document.getElementById('ef-prev-list').innerHTML = efDati.length
-    ? efDati.map(r => `<tr>
-        <td class="td-bold">${r.nome_azienda || '—'}</td>
-        <td class="td-muted">${r.settore || '—'}</td>
-        <td style="text-align:right">${fE(r.preventivo)}</td>
-      </tr>`).join('')
+  // Aziende
+  document.getElementById('ef-az-cnt').textContent = miei.length;
+  document.getElementById('ef-az-list').innerHTML = miei.length
+    ? miei.map(r=>`<tr><td class="td-bold">${r.nome_azienda||'—'}</td><td class="td-muted">${r.settore||'—'}</td><td class="td-muted">${r.referente||'—'}</td><td class="td-mono">${fD(r.data_incontro)}</td></tr>`).join('')
+    : '<tr><td colspan="4"><div class="empty" style="padding:20px"><p>Nessuna azienda completata</p></div></td></tr>';
+
+  // Preventivi
+  document.getElementById('ef-pr-tot').textContent = fmt(tot);
+  document.getElementById('ef-pr-list').innerHTML = miei.length
+    ? miei.map(r=>`<tr><td class="td-bold">${r.nome_azienda||'—'}</td><td class="td-muted">${r.settore||'—'}</td><td style="text-align:right">${fE(r.preventivo)}</td></tr>`).join('')
     : '<tr><td colspan="3"><div class="empty" style="padding:20px"><p>Nessun preventivo</p></div></td></tr>';
+}
 
-  // Calcolo guadagno
-  document.getElementById('ef-calc-tot').textContent = '€ ' + totPrev.toLocaleString('it-IT');
-  document.getElementById('ef-calc-80').textContent  = '€ ' + Math.round(al80).toLocaleString('it-IT');
-  document.getElementById('ef-calc-35').textContent  = '€ ' + Math.round(il35).toLocaleString('it-IT');
+function renderEFTotale() {
+  document.getElementById('ef-personal-panel').style.display = 'none';
+  document.getElementById('ef-totale-panel').style.display   = 'block';
+  document.getElementById('ef-page-sub').textContent = 'Dashboard totale — tutti gli utenti';
+
+  // Tutti i dati completati (esclude viewer)
+  const nonViewer = users.filter(u => u.role !== 'viewer').map(u => u.username);
+  const tuttiComp = dati.filter(r => nonViewer.includes(r.aggiunto_da) && r.stato === '✅ Sito completato');
+  const totGlobale = tuttiComp.reduce((s, r) => s + (Number(r.preventivo)||0), 0);
+  const fmt = v => v > 0 ? '€ ' + v.toLocaleString('it-IT') : '—';
+
+  // Stat cards totale
+  document.getElementById('ef-stats-totale').innerHTML = `
+    <div class="stat-card c-purple">
+      <div class="stat-icon">🌐</div>
+      <div class="stat-val">${tuttiComp.length}</div>
+      <div class="stat-label">Siti completati (totale)</div>
+    </div>
+    <div class="stat-card c-green">
+      <div class="stat-icon">💶</div>
+      <div class="stat-val" style="font-size:${totGlobale>99999?'16px':'24px'}">${fmt(totGlobale)}</div>
+      <div class="stat-label">Preventivi globali</div>
+    </div>
+    <div class="stat-card c-gold">
+      <div class="stat-icon">✨</div>
+      <div class="stat-val" style="font-size:${(totGlobale*.8*.35)>99999?'16px':'24px'}">${totGlobale>0?'€ '+Math.round(totGlobale*.8*.35).toLocaleString('it-IT'):'—'}</div>
+      <div class="stat-label">35% globale</div>
+    </div>
+    <div class="stat-card c-blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-val">${nonViewer.length}</div>
+      <div class="stat-label">Utenti attivi</div>
+    </div>`;
+
+  // Blocco calcolo totale
+  document.getElementById('ef-calc-totale').innerHTML = buildCalcBlock(totGlobale, 'totale globale');
+
+  // Tabella per utente
+  document.getElementById('ef-totale-list').innerHTML = nonViewer.map(u => {
+    const uDati = tuttiComp.filter(r => r.aggiunto_da === u);
+    const uTot  = uDati.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
+    const u80   = uTot * 0.80;
+    const u35   = u80  * 0.35;
+    const f = v => v>0 ? '€ '+Math.round(v).toLocaleString('it-IT') : '—';
+    return `<tr>
+      <td><strong>${u}</strong></td>
+      <td><span style="font-family:'JetBrains Mono',monospace">${uDati.length}</span></td>
+      <td style="text-align:right">${fE(uTot||null)}</td>
+      <td style="text-align:right;color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:12px">${f(u80)}</td>
+      <td style="text-align:right;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${f(u35)}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ── EXPORT / IMPORT ───────────────────────────────────
