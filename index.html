@@ -4,102 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EF Organizzazione Web</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ── CURSOR SYSTEM ──────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Punto centrale preciso */
 #cursor-dot {
-  position: fixed;
-  width: 6px; height: 6px;
+  position: fixed; top: 0; left: 0;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: #1A56E8;
   pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 10001;
-  transition: width .15s, height .15s, background .15s, opacity .2s;
-  box-shadow: 0 0 6px rgba(26,86,232,.8);
+  z-index: 10002;
+  will-change: transform;
+  box-shadow: 0 0 8px rgba(26,86,232,.9);
+  transition: width .12s ease, height .12s ease, background .12s ease, box-shadow .12s ease, opacity .2s;
 }
-
-/* Anello che segue con ritardo */
 #cursor-ring {
-  position: fixed;
-  width: 34px; height: 34px;
+  position: fixed; top: 0; left: 0;
+  width: 38px; height: 38px;
   border-radius: 50%;
-  border: 1.5px solid rgba(26,86,232,.55);
+  border: 1.5px solid rgba(26,86,232,.5);
   pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 10000;
-  transition: width .25s cubic-bezier(.4,0,.2,1),
-              height .25s cubic-bezier(.4,0,.2,1),
-              border-color .2s,
-              opacity .2s;
+  z-index: 10001;
+  will-change: transform;
+  transition: width .2s ease, height .2s ease, border-color .15s, background .15s, opacity .2s;
 }
-
-/* Alone morbido */
 #cursor-glow {
-  position: fixed;
-  width: 80px; height: 80px;
+  position: fixed; top: 0; left: 0;
+  width: 90px; height: 90px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(26,86,232,.09) 0%, transparent 68%);
+  background: radial-gradient(circle, rgba(26,86,232,.08) 0%, transparent 65%);
   pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  transition: width .3s, height .3s, opacity .2s;
+  z-index: 10000;
+  will-change: transform;
+  transition: width .3s ease, height .3s ease, opacity .25s;
 }
 
 body:not(.cursor-moved) #cursor-dot,
 body:not(.cursor-moved) #cursor-ring,
 body:not(.cursor-moved) #cursor-glow { opacity: 0; }
 
-/* Stato hover su elementi cliccabili */
 body.cursor-hover #cursor-dot {
-  width: 10px; height: 10px;
+  width: 9px; height: 9px;
   background: #fff;
-  box-shadow: 0 0 10px rgba(26,86,232,1), 0 0 20px rgba(26,86,232,.4);
+  box-shadow: 0 0 0 2px rgba(26,86,232,.6), 0 0 16px rgba(26,86,232,.5);
 }
 body.cursor-hover #cursor-ring {
-  width: 46px; height: 46px;
-  border-color: rgba(26,86,232,.8);
-  background: rgba(26,86,232,.06);
+  width: 50px; height: 50px;
+  border-color: rgba(26,86,232,.75);
+  background: rgba(26,86,232,.05);
 }
 body.cursor-hover #cursor-glow {
-  width: 110px; height: 110px;
-  background: radial-gradient(circle, rgba(26,86,232,.14) 0%, transparent 68%);
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(26,86,232,.12) 0%, transparent 65%);
 }
-
-/* Stato click */
 body.cursor-click #cursor-dot {
-  width: 4px; height: 4px;
-  box-shadow: 0 0 14px rgba(26,86,232,1);
+  width: 5px; height: 5px;
+  box-shadow: 0 0 0 3px rgba(26,86,232,.4), 0 0 20px rgba(26,86,232,.6);
 }
 body.cursor-click #cursor-ring {
-  width: 24px; height: 24px;
-  border-color: rgba(26,86,232,1);
+  width: 26px; height: 26px;
+  border-color: rgba(26,86,232,.9);
 }
-
-/* Sullo sfondo scuro (login/sidebar) il cerchio diventa bianco */
 body.cursor-dark #cursor-dot {
   background: #fff;
-  box-shadow: 0 0 8px rgba(255,255,255,.7);
+  box-shadow: 0 0 8px rgba(255,255,255,.8);
 }
-body.cursor-dark #cursor-ring {
-  border-color: rgba(255,255,255,.5);
-}
-body.cursor-dark #cursor-glow {
-  background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 68%);
-}
-body.cursor-dark.cursor-hover #cursor-dot {
-  background: #93BBFC;
-  box-shadow: 0 0 12px rgba(147,187,252,.8);
-}
-body.cursor-dark.cursor-hover #cursor-ring {
-  border-color: rgba(147,187,252,.7);
-  background: rgba(147,187,252,.06);
-}
+body.cursor-dark #cursor-ring { border-color: rgba(255,255,255,.45); }
+body.cursor-dark #cursor-glow { background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 65%); }
+body.cursor-dark.cursor-hover #cursor-dot { background: #93BBFC; box-shadow: 0 0 0 2px rgba(147,187,252,.5), 0 0 14px rgba(147,187,252,.6); }
+body.cursor-dark.cursor-hover #cursor-ring { border-color: rgba(147,187,252,.7); background: rgba(147,187,252,.05); }
 
 :root {
   --ink:#0E0F11;--ink2:#3A3D45;--ink3:#7A7F8E;--ink4:#B0B5C0;
@@ -116,7 +93,7 @@ body.cursor-dark.cursor-hover #cursor-ring {
 }
 
 html{font-size:14px}
-body{font-family:'Instrument Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;cursor:none}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;cursor:none}
 a,button,select,input,textarea,[onclick]{cursor:none}
 
 /* LOGIN */
@@ -127,9 +104,9 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
 .login-logo-icon{width:42px;height:42px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.login-logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-.02em}
+.login-logo-text{font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-.02em}
 .login-logo-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
-.login-title{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:6px}
+.login-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:6px}
 .login-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:28px}
 .login-field{margin-bottom:16px}
 .login-field label{display:block;font-size:11px;font-weight:500;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
@@ -138,7 +115,7 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 .login-field input::placeholder{color:rgba(255,255,255,.2)}
 .login-error{color:#FC8181;font-size:12px;margin-top:-8px;margin-bottom:12px;display:none}
 .login-error.show{display:block}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border:none;border-radius:var(--r);cursor:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;margin-top:8px;transition:all .2s;box-shadow:0 4px 20px rgba(26,86,232,.35)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border:none;border-radius:var(--r);cursor:none;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;margin-top:8px;transition:all .2s;box-shadow:0 4px 20px rgba(26,86,232,.35)}
 .login-btn:hover{background:linear-gradient(135deg,#1240C0,#2563EB);box-shadow:0 6px 28px rgba(26,86,232,.45);transform:translateY(-1px)}
 .login-btn:active{transform:scale(.98);box-shadow:0 2px 12px rgba(26,86,232,.3)}
 .login-btn:disabled{opacity:.6;transform:none;box-shadow:none}
@@ -153,9 +130,9 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 .sb-header{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
 .sb-logo{display:flex;align-items:center;gap:11px;margin-bottom:18px}
 .sb-logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.sb-logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:-.02em}
+.sb-logo-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:-.02em}
 .sb-user{display:flex;align-items:center;gap:10px;padding:9px 10px;background:rgba(255,255,255,.05);border-radius:var(--r)}
-.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
 .sb-user-name{font-size:12px;font-weight:500;color:rgba(255,255,255,.85)}
 .sb-user-role{font-size:10px;color:rgba(255,255,255,.35)}
 .sb-user-badge{margin-left:auto;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:rgba(26,86,232,.35);color:#93BBFC;text-transform:uppercase;letter-spacing:.05em}
@@ -167,25 +144,26 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 .sb-item.active{background:rgba(26,86,232,.25);color:#93BBFC;font-weight:500}
 .sb-item.active svg{opacity:1}
 .sb-item .bc{margin-left:auto;font-size:10px;font-weight:600;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:1px 7px;border-radius:20px}
-.sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px}
-.sb-footer-btns{display:flex;gap:6px}
-.sb-fbtn{flex:1;padding:7px 6px;border-radius:var(--r);border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.45);font-family:inherit;font-size:11px;cursor:none;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
-.sb-fbtn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.2)}
-.sb-logout{border-color:rgba(220,38,38,.3);color:rgba(255,120,120,.7)}
-.sb-logout:hover{background:rgba(220,38,38,.15);color:#FCA5A5;border-color:rgba(220,38,38,.5)!important}
+.sb-footer{padding:10px 12px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.sb-footer-btns{display:flex;gap:5px}
+.sb-fbtn{flex:1;padding:7px 5px;border-radius:var(--r);border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:500;cursor:none;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;min-width:0}
+.sb-fbtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-fbtn:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.18)}
+.sb-logout{border-color:rgba(239,68,68,.25);color:rgba(252,165,165,.65)}
+.sb-logout:hover{background:rgba(239,68,68,.12)!important;color:#FCA5A5!important;border-color:rgba(239,68,68,.4)!important}
 
 /* REALTIME DOT */
-.rt-wrap{display:flex;align-items:center;gap:5px;padding:0 4px}
-.rt-dot{width:7px;height:7px;border-radius:50%;background:#4B5563;transition:background .4s,box-shadow .4s;flex-shrink:0}
+.rt-wrap{display:flex;align-items:center;gap:7px;padding:2px 3px}
+.rt-dot{width:7px;height:7px;border-radius:50%;background:#374151;transition:background .4s,box-shadow .4s;flex-shrink:0}
 .rt-dot.on{background:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,.2);animation:rtpulse 2s infinite}
-@keyframes rtpulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.06)}}
-.rt-lbl{font-size:10px;color:rgba(255,255,255,.3)}
+@keyframes rtpulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.05)}}
+.rt-lbl{font-size:10px;color:rgba(255,255,255,.35);font-weight:500}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{background:var(--white);border-bottom:1px solid var(--paper3);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 0 var(--paper3)}
 .topbar-left{display:flex;align-items:center;gap:14px}
-.topbar-title{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.topbar-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em}
 .topbar-sep{color:var(--paper3);font-size:18px}
 .topbar-sub{font-size:12px;color:var(--ink3)}
 .topbar-right{display:flex;align-items:center;gap:8px}
@@ -211,7 +189,7 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 
 /* PAGE HEADER */
 .page-header{margin-bottom:24px}
-.page-header h2{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
+.page-header h2{font-family:'Outfit',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
 .page-header p{font-size:13px;color:var(--ink3)}
 
 /* STATS */
@@ -230,7 +208,7 @@ a,button,select,input,textarea,[onclick]{cursor:none}
 /* CARD */
 .card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:20px}
 .card-header{padding:16px 20px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-family:'Syne',sans-serif;font-weight:600;font-size:14px}
+.card-title{font-family:'Outfit',sans-serif;font-weight:600;font-size:14px}
 .card-body{padding:20px}
 .card-footer{padding:14px 20px;border-top:1px solid var(--paper3);background:var(--paper);display:flex;align-items:center;gap:10px}
 
@@ -309,7 +287,7 @@ tr:hover .row-actions{opacity:1}
 .user-list{display:flex;flex-direction:column;gap:10px}
 .user-row{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);transition:all .2s}
 .user-row:hover{border-color:var(--accent-l);box-shadow:0 0 0 3px rgba(26,86,232,.06),var(--shadow-sm)}
-.user-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent-l),#C7D9FF);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(26,86,232,.15)}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent-l),#C7D9FF);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;border:2px solid rgba(26,86,232,.15)}
 .user-avatar.adm{background:linear-gradient(135deg,var(--ink),#2D3748);color:#fff;border-color:transparent}
 .user-name{font-weight:500;font-size:14px;margin-bottom:2px}
 .user-meta{font-size:11px;color:var(--ink3)}
@@ -320,7 +298,7 @@ tr:hover .row-actions{opacity:1}
 .user-avatar.vwr{background:linear-gradient(135deg,var(--teal-l),#A5D8E6);color:var(--teal);border-color:rgba(14,116,144,.2)}
 .add-user-box{background:linear-gradient(135deg,var(--accent-l),#F0F5FF);border:1.5px solid rgba(26,86,232,.2);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;display:none}
 .add-user-box.open{display:block;animation:fadeIn .2s ease}
-.add-user-box h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
+.add-user-box h3{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
 
 /* RICERCA iframe wrapper glow */
 #view-ricerca .iframe-wrap {
@@ -338,7 +316,7 @@ tr:hover .row-actions{opacity:1}
 .overlay{display:none;position:fixed;inset:0;background:rgba(14,15,17,.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .overlay.open{display:flex}
 .modal{background:var(--white);border-radius:var(--r-xl);padding:32px;max-width:400px;width:90%;box-shadow:var(--shadow-lg);animation:fadeUp .2s ease}
-.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:8px}
+.modal h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;margin-bottom:8px}
 .modal p{color:var(--ink3);font-size:13px;line-height:1.6;margin-bottom:24px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
@@ -356,7 +334,7 @@ tr:hover .row-actions{opacity:1}
 
 /* LOADING OVERLAY */
 #loading{position:fixed;inset:0;background:var(--ink);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
-.ld-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#fff;letter-spacing:-.03em;display:flex;align-items:center;gap:12px}
+.ld-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;color:#fff;letter-spacing:-.03em;display:flex;align-items:center;gap:12px}
 .ld-logo span{color:var(--accent)}
 .ld-tagline{font-size:13px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase}
 .ld-bar{width:180px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:4px}
@@ -415,7 +393,7 @@ tr:hover .row-actions{opacity:1}
     </div>
     <div class="login-error" id="li-err">Credenziali non valide. Riprova.</div>
     <button class="login-btn" id="li-btn" onclick="doLogin()">Accedi →</button>
-    <div class="login-footer">WebCRM v3.0 · sincronizzato con Supabase ☁️</div>
+    <div class="login-footer">EF Organizzazione Web · v4.0 · ☁️ Supabase</div>
   </div>
 </div>
 
@@ -852,44 +830,46 @@ const dot  = document.getElementById('cursor-dot');
 const ring = document.getElementById('cursor-ring');
 const glow = document.getElementById('cursor-glow');
 
-let mx = 0, my = 0;   // mouse position (exact)
-let rx = 0, ry = 0;   // ring position (lagged)
-let gx = 0, gy = 0;   // glow position (more lagged)
+// Posizioni target e attuali
+let mx=0, my=0, rx=0, ry=0, gx=0, gy=0;
+// Offset centramento (metà dimensione elemento)
+const DOT_O=3.5, RING_O=19, GLOW_O=45;
 
 document.addEventListener('mousemove', e => {
   mx = e.clientX; my = e.clientY;
   document.body.classList.add('cursor-moved');
-  // Il punto segue istantaneamente
-  dot.style.left = mx + 'px';
-  dot.style.top  = my + 'px';
-  // Rileva se siamo su sfondo scuro
+  // Punto: segue immediatamente con translate3d
+  dot.style.transform = `translate3d(${mx - DOT_O}px, ${my - DOT_O}px, 0)`;
+  // Rileva zona scura
   const el = document.elementFromPoint(mx, my);
-  const onDark = el && (el.closest('.sidebar, #login-screen, #loading') !== null);
-  document.body.classList.toggle('cursor-dark', onDark);
-});
+  const dark = !!(el && el.closest('.sidebar,#login-screen,#loading'));
+  document.body.classList.toggle('cursor-dark', dark);
+}, { passive: true });
 
-// Anello e alone seguono con inerzia
-(function loop() {
-  rx += (mx - rx) * 0.14;
-  ry += (my - ry) * 0.14;
-  gx += (mx - gx) * 0.08;
-  gy += (my - gy) * 0.08;
-  ring.style.left = rx + 'px';
-  ring.style.top  = ry + 'px';
-  glow.style.left = gx + 'px';
-  glow.style.top  = gy + 'px';
-  requestAnimationFrame(loop);
-})();
+// Anello e alone: inerzia via rAF
+let rafId;
+function cursorLoop() {
+  // Anello: lerp più veloce
+  rx += (mx - rx - RING_O) * 0.16;
+  ry += (my - ry - RING_O) * 0.16;
+  ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+  // Alone: lerp più lento
+  gx += (mx - gx - GLOW_O) * 0.09;
+  gy += (my - gy - GLOW_O) * 0.09;
+  glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`;
+  rafId = requestAnimationFrame(cursorLoop);
+}
+cursorLoop();
 
-// Hover su elementi interattivi
+// Hover
 document.addEventListener('mouseover', e => {
-  const over = !!e.target.closest('button, a, [onclick], select, input[type=date], input[type=number], .sb-item, .k-card, .stat-card, th');
+  const over = !!e.target.closest('button,a,[onclick],select,.sb-item,.k-card,.stat-card,th,.card-header');
   document.body.classList.toggle('cursor-hover', over);
-});
+}, { passive: true });
 
-// Click feedback
-document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
+// Click
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'),    { passive: true });
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'), { passive: true });
 
 // ── STATO LOCALE ──────────────────────────────────────
 let dati = [], users = [], sess = null;
@@ -1159,9 +1139,14 @@ function renderTab() {
   document.getElementById('ris-cnt').textContent = rows.length + ' ' + (rows.length === 1 ? 'risultato' : 'risultati');
   const tbody = document.getElementById('tbody-main');
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11"><div class="empty"><div class="e-ico">🔍</div><p>Nessun risultato</p><small>Cambia i filtri</small></div></td></tr>'; return; }
-  const showPrev = sess && sess.role !== 'viewer';
-  const canEdit  = sess && sess.role !== 'viewer';
-  tbody.innerHTML = rows.map(r => `<tr>
+  const isAdmin  = sess && sess.role === 'admin';
+  const isUser   = sess && sess.role === 'user';
+  tbody.innerHTML = rows.map(r => {
+    const isOwner   = r.aggiunto_da === sess.username;
+    const canEdit   = isAdmin || (isUser && isOwner);
+    const canDelete = isAdmin;
+    const showPrev  = sess && sess.role !== 'viewer';
+    return `<tr>
     <td class="td-muted">${r.settore || '—'}</td>
     <td class="td-bold">${r.nome_azienda || '—'}</td>
     <td class="td-mono" style="font-size:11.5px">${r.telefono_email || '<span style="color:var(--ink4)">—</span>'}</td>
@@ -1171,12 +1156,13 @@ function renderTab() {
     <td class="td-mono">${fD(r.data_incontro)}</td>
     <td>${showPrev ? fE(r.preventivo) : '<span style="color:var(--ink4);font-size:11px;font-style:italic">nascosto</span>'}</td>
     <td class="td-muted">${r.referente || '—'}</td>
-    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink3);font-size:12px" title="${(r.note || '').replace(/"/g, '&quot;')}">${r.note || '<span style="color:var(--ink4)">—</span>'}</td>
-    <td>${canEdit ? `<div class="row-actions">
-      <button class="btn btn-ghost btn-xs" onclick="editR('${r.id}')">✎</button>
-      <button class="btn btn-danger btn-xs" onclick="askDel('${r.id}')">✕</button>
-    </div>` : ''}</td>
-  </tr>`).join('');
+    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink3);font-size:12px" title="${(r.note||'').replace(/"/g,'&quot;')}">${r.note||'<span style="color:var(--ink4)">—</span>'}</td>
+    <td><div class="row-actions">
+      ${canEdit   ? `<button class="btn btn-ghost btn-xs" onclick="editR('${r.id}')">✎</button>` : ''}
+      ${canDelete ? `<button class="btn btn-danger btn-xs" onclick="askDel('${r.id}')">✕</button>` : ''}
+    </div></td>
+  </tr>`;
+  }).join('');
 }
 
 // ── PIPELINE ──────────────────────────────────────────
@@ -1242,6 +1228,11 @@ async function salva() {
 function editR(id) {
   const r = dati.find(x => String(x.id) === String(id));
   if (!r) return;
+  // Operatore può modificare solo le sue aziende
+  if (sess.role === 'user' && r.aggiunto_da !== sess.username) {
+    toast('Puoi modificare solo le aziende che hai inserito tu', 'err'); return;
+  }
+  if (sess.role === 'viewer') { toast('Accesso negato', 'err'); return; }
   document.getElementById('f-settore').value = r.settore || '';
   document.getElementById('f-nome').value    = r.nome_azienda || '';
   document.getElementById('f-cont').value    = r.telefono_email || '';
@@ -1267,7 +1258,10 @@ function pulisci() {
 }
 
 // ── DELETE ────────────────────────────────────────────
-function askDel(id) { delId = id; document.getElementById('mod-del').classList.add('open'); }
+function askDel(id) {
+  if (sess.role !== 'admin') { toast('Solo l\'admin può eliminare aziende', 'err'); return; }
+  delId = id; document.getElementById('mod-del').classList.add('open');
+}
 async function doDel() {
   if (delId) {
     try {
