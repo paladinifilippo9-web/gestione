@@ -445,10 +445,14 @@ tr:hover .row-actions{opacity:1}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
         <span>Gestione utenti</span>
       </button>
-      <div class="sb-section ef-private-only">Privato</div>
-      <button class="sb-item ef-private-only" onclick="nav('ef-private',this)">
+      <div class="sb-section no-viewer">EF Dashboard</div>
+      <button class="sb-item no-viewer" onclick="nav('ef-private',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        <span>EF Dashboard</span>
+        <span>La mia Dashboard</span>
+      </button>
+      <button class="sb-item admin-only" onclick="nav('ef-riepilogo',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h4M7 12h10"/></svg>
+        <span>Riepilogo Totale</span>
       </button>
     </nav>
     <div class="sb-footer">
@@ -587,6 +591,9 @@ tr:hover .row-actions{opacity:1}
             <option value="">Tutte le priorità</option>
             <option>🔴 Alta</option><option>🟡 Media</option><option>🟢 Bassa</option>
           </select>
+          <select class="filter-sel admin-only" id="fl-u" onchange="renderTab()" style="display:none">
+            <option value="">Tutti gli utenti</option>
+          </select>
           <span style="font-size:12px;color:var(--ink3);white-space:nowrap" id="ris-cnt"></span>
         </div>
         <div class="table-wrap">
@@ -645,67 +652,54 @@ tr:hover .row-actions{opacity:1}
         <div class="user-list" id="user-list"></div>
       </div>
 
-      <!-- EF PRIVATE DASHBOARD -->
+      <!-- EF DASHBOARD PERSONALE — visibile a tutti tranne viewer -->
       <div class="view" id="view-ef-private">
-        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-          <div>
-            <h2>🛡️ EF Dashboard</h2>
-            <p id="ef-page-sub">Le tue aziende completate e i tuoi guadagni</p>
-          </div>
-          <!-- Tab switcher: visibile solo a fillo e manu -->
-          <div id="ef-tab-bar" style="display:none;background:var(--paper2);border-radius:var(--r-lg);padding:4px;border:1px solid var(--paper3);display:flex;gap:4px;flex-wrap:wrap"></div>
+        <div class="page-header">
+          <h2>🛡️ La mia Dashboard</h2>
+          <p id="ef-page-sub">Le tue aziende completate e i tuoi guadagni</p>
         </div>
-
-        <!-- Dashboard personale (ogni utente) -->
-        <div id="ef-personal-panel">
-          <div class="stats-grid" style="margin-bottom:20px" id="ef-stats-personal"></div>
-
-          <!-- Calcolo cifre evidenziate -->
-          <div id="ef-calc-panel" style="margin-bottom:20px"></div>
-
-          <!-- Aziende completate (espandibile) -->
-          <div class="card" style="margin-bottom:16px">
-            <div class="card-header" onclick="toggleSection('ef-az-body')" style="cursor:none">
-              <span class="card-title">🏢 Aziende con sito completato</span>
-              <div style="display:flex;align-items:center;gap:10px">
-                <span id="ef-az-cnt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:600">0</span>
-                <span id="ef-az-arrow" style="color:var(--ink3);font-size:11px">▼</span>
-              </div>
-            </div>
-            <div id="ef-az-body" style="display:none;overflow:auto">
-              <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th>Referente</th><th>Data</th></tr></thead>
-              <tbody id="ef-az-list"></tbody></table>
+        <div class="stats-grid" style="margin-bottom:20px" id="ef-stats-personal"></div>
+        <div id="ef-calc-panel" style="margin-bottom:20px"></div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header" onclick="toggleSection('ef-az-body')" style="cursor:none">
+            <span class="card-title">🏢 Aziende con sito completato</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span id="ef-az-cnt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:600">0</span>
+              <span id="ef-az-arrow" style="color:var(--ink3);font-size:11px">▼</span>
             </div>
           </div>
-
-          <!-- Preventivi (espandibile) -->
-          <div class="card">
-            <div class="card-header" onclick="toggleSection('ef-pr-body')" style="cursor:none">
-              <span class="card-title">💶 Preventivi per azienda</span>
-              <div style="display:flex;align-items:center;gap:10px">
-                <span id="ef-pr-tot" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);font-weight:600">€ 0</span>
-                <span id="ef-pr-arrow" style="color:var(--ink3);font-size:11px">▼</span>
-              </div>
-            </div>
-            <div id="ef-pr-body" style="display:none;overflow:auto">
-              <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th style="text-align:right">Preventivo</th></tr></thead>
-              <tbody id="ef-pr-list"></tbody></table>
-            </div>
+          <div id="ef-az-body" style="display:none;overflow:auto">
+            <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th>Referente</th><th>Data</th></tr></thead>
+            <tbody id="ef-az-list"></tbody></table>
           </div>
         </div>
-
-        <!-- Dashboard TOTALE (solo fillo/manu, tab "Totale") -->
-        <div id="ef-totale-panel" style="display:none">
-          <div class="stats-grid" style="margin-bottom:20px" id="ef-stats-totale"></div>
-          <div id="ef-calc-totale" style="margin-bottom:20px"></div>
-          <div class="card">
-            <div class="card-header"><span class="card-title">📋 Riepilogo per utente</span></div>
-            <div style="overflow:auto"><table>
-              <thead><tr><th>Utente</th><th>Aziende completate</th><th style="text-align:right">Tot. Preventivi</th><th style="text-align:right">−20%</th><th style="text-align:right">35% netto</th></tr></thead>
-              <tbody id="ef-totale-list"></tbody>
-            </table></div>
+        <div class="card">
+          <div class="card-header" onclick="toggleSection('ef-pr-body')" style="cursor:none">
+            <span class="card-title">💶 Preventivi per azienda</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span id="ef-pr-tot" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);font-weight:600">€ 0</span>
+              <span id="ef-pr-arrow" style="color:var(--ink3);font-size:11px">▼</span>
+            </div>
+          </div>
+          <div id="ef-pr-body" style="display:none;overflow:auto">
+            <table><thead><tr><th>Nome Azienda</th><th>Settore</th><th style="text-align:right">Preventivo</th></tr></thead>
+            <tbody id="ef-pr-list"></tbody></table>
           </div>
         </div>
+      </div>
+
+      <!-- EF RIEPILOGO TOTALE — solo admin -->
+      <div class="view" id="view-ef-riepilogo">
+        <div class="page-header">
+          <h2>📊 Riepilogo Totale</h2>
+          <p>Dashboard aggregate per ogni utente — solo amministratori</p>
+        </div>
+        <!-- Tab switcher per utente + totale -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+          <div id="ef-rie-tabs" style="background:var(--paper2);border-radius:var(--r-lg);padding:4px;border:1px solid var(--paper3);display:flex;gap:4px;flex-wrap:wrap"></div>
+        </div>
+        <!-- Contenuto dinamico -->
+        <div id="ef-rie-content"></div>
       </div>
 
       <!-- CAMBIO PASSWORD -->
@@ -740,12 +734,7 @@ tr:hover .row-actions{opacity:1}
           <p>Trova aziende da contattare nella tua zona</p>
         </div>
         <div style="border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--paper3);box-shadow:var(--shadow)">
-          <iframe
-            src="https://find-businesses.vercel.app/"
-            style="width:100%;height:calc(100vh - 210px);border:none;display:block"
-            allow="geolocation"
-            title="Ricerca Attività"
-          ></iframe>
+          <iframe src="https://find-businesses.vercel.app/" style="width:100%;height:calc(100vh - 210px);border:none;display:block" allow="geolocation" title="Ricerca Attività"></iframe>
         </div>
       </div>
 
@@ -1024,12 +1013,6 @@ async function bootApp() {
     el.style.display = isViewer ? 'none' : '';
   });
 
-  // EF private section: solo fillo e manu
-  const canSeeEF = (sess.username === 'fillo' || sess.username === 'manu');
-  document.querySelectorAll('.ef-private-only').forEach(el => {
-    el.style.display = canSeeEF ? '' : 'none';
-  });
-
   const ok = await dbLoad();
   if (!ok) return;
   aggDl(); updCnt(); renderDash();
@@ -1048,14 +1031,15 @@ window.addEventListener('load', async () => {
 
 // ── NAV ───────────────────────────────────────────────
 const tbT = {
-  dashboard:   ['Dashboard',          'Riepilogo generale'],
-  inserimento: ['Nuova azienda',      'Compila i campi e salva'],
-  tabella:     ['Tabella aziende',    'Lista completa'],
-  pipeline:    ['Pipeline Kanban',    'Vista per stato'],
-  utenti:      ['Gestione utenti',    'Crea e gestisci account'],
-  ricerca:     ['Ricerca Attività',   'Trova aziende da contattare'],
-  password:    ['Cambia Password',    'Aggiorna le tue credenziali'],
-  'ef-private':['EF Dashboard',       'Sezione privata — fillo & manu'],
+  dashboard:      ['Dashboard',         'Riepilogo generale'],
+  inserimento:    ['Nuova azienda',     'Compila i campi e salva'],
+  tabella:        ['Tabella aziende',   'Lista completa'],
+  pipeline:       ['Pipeline Kanban',   'Vista per stato'],
+  utenti:         ['Gestione utenti',   'Crea e gestisci account'],
+  ricerca:        ['Ricerca Attività',  'Trova aziende da contattare'],
+  password:       ['Cambia Password',   'Aggiorna le tue credenziali'],
+  'ef-private':   ['La mia Dashboard', 'Le tue aziende completate e i tuoi guadagni'],
+  'ef-riepilogo': ['Riepilogo Totale',  'Dashboard aggregate — solo amministratori'],
 };
 function nav(id, btn) {
   document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = ''; });
@@ -1068,11 +1052,12 @@ function nav(id, btn) {
   const t = tbT[id] || ['', ''];
   document.getElementById('tb-t').textContent = t[0];
   document.getElementById('tb-s').textContent = t[1];
-  if (id === 'dashboard')   renderDash();
-  if (id === 'tabella')     renderTab();
-  if (id === 'pipeline')    renderPipeline();
-  if (id === 'utenti')      renderUsers();
-  if (id === 'ef-private')  renderEFPrivate();
+  if (id === 'dashboard')    renderDash();
+  if (id === 'tabella')      renderTab();
+  if (id === 'pipeline')     renderPipeline();
+  if (id === 'utenti')       renderUsers();
+  if (id === 'ef-private')   renderEFPersonale(sess.username);
+  if (id === 'ef-riepilogo') renderEFRiepilogo();
 }
 
 // ── STATI ─────────────────────────────────────────────
@@ -1121,13 +1106,32 @@ function renderDash() {
 
 // ── TABELLA ───────────────────────────────────────────
 function srt(f) { sf === f ? sa = !sa : (sf = f, sa = true); renderTab(); }
+
+function aggUserFilter() {
+  const sel = document.getElementById('fl-u');
+  if (!sel) return;
+  if (!sess || sess.role !== 'admin') { sel.style.display = 'none'; return; }
+  sel.style.display = '';
+  const current = sel.value;
+  const utenti = [...new Set(dati.map(r => r.aggiunto_da).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Tutti gli utenti</option>' +
+    utenti.map(u => `<option value="${u}"${u === current ? ' selected' : ''}>${u}</option>`).join('');
+}
+
 function renderTab() {
+  aggUserFilter();
   const q  = document.getElementById('srch').value.toLowerCase();
   const fs = document.getElementById('fl-s').value;
   const fp = document.getElementById('fl-p').value;
+  const fuEl = document.getElementById('fl-u');
+  const fu = (fuEl && fuEl.style.display !== 'none') ? fuEl.value : '';
+
   let rows = dati.filter(r => {
     const txt = Object.values(r).join(' ').toLowerCase();
-    return (!q || txt.includes(q)) && (!fs || r.stato === fs) && (!fp || r.priorita === fp);
+    return (!q || txt.includes(q))
+        && (!fs || r.stato === fs)
+        && (!fp || r.priorita === fp)
+        && (!fu || r.aggiunto_da === fu);
   });
   if (sf) rows.sort((a, b) => {
     const av = String(a[sf] || ''), bv = String(b[sf] || '');
@@ -1136,8 +1140,9 @@ function renderTab() {
   document.getElementById('ris-cnt').textContent = rows.length + ' ' + (rows.length === 1 ? 'risultato' : 'risultati');
   const tbody = document.getElementById('tbody-main');
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11"><div class="empty"><div class="e-ico">🔍</div><p>Nessun risultato</p><small>Cambia i filtri</small></div></td></tr>'; return; }
-  const isAdmin  = sess && sess.role === 'admin';
-  const isUser   = sess && sess.role === 'user';
+
+  const isAdmin = sess && sess.role === 'admin';
+  const isUser  = sess && sess.role === 'user';
   tbody.innerHTML = rows.map(r => {
     const isOwner   = r.aggiunto_da === sess.username;
     const canEdit   = isAdmin || (isUser && isOwner);
@@ -1371,96 +1376,55 @@ async function cambiaPassword() {
 // ── EF PRIVATE DASHBOARD ──────────────────────────────
 function toggleSection(id) {
   const el = document.getElementById(id);
-  const isHidden = el.style.display === 'none' || el.style.display === '';
-  el.style.display = isHidden ? 'block' : 'none';
-  const arrowId = id.replace('-body', '-arrow');
-  const arrow = document.getElementById(arrowId);
-  if (arrow) arrow.textContent = isHidden ? '▲' : '▼';
+  const hidden = el.style.display === 'none' || el.style.display === '';
+  el.style.display = hidden ? 'block' : 'none';
+  const arrow = document.getElementById(id.replace('-body', '-arrow'));
+  if (arrow) arrow.textContent = hidden ? '▲' : '▼';
 }
 
-// ── EF PRIVATE DASHBOARD ──────────────────────────────
-// Utente attualmente visualizzato nei tab (default = se stesso)
-let efCurrentUser = null;
+// ── EF DASHBOARD ──────────────────────────────────────
 
-function renderEFPrivate() {
-  const isSupervisor = (sess.username === 'fillo' || sess.username === 'manu');
-  efCurrentUser = efCurrentUser || sess.username;
-
-  // Tab bar: visibile solo a fillo e manu
-  const tabBar = document.getElementById('ef-tab-bar');
-  if (isSupervisor) {
-    // Raccoglie tutti gli utenti non-viewer che hanno almeno 1 azienda completata
-    const eligibleUsers = users.filter(u => u.role !== 'viewer');
-    // Costruisce tab: uno per utente + uno Totale
-    tabBar.style.display = 'flex';
-    tabBar.innerHTML = eligibleUsers.map(u => `
-      <button class="ef-tab ${efCurrentUser === u.username ? 'active' : ''}"
-        onclick="efSwitchTab('${u.username}')">
-        ${u.username === sess.username ? '👤 ' + u.username : u.username}
-      </button>`).join('') +
-      `<button class="ef-tab ${efCurrentUser === '__totale__' ? 'active' : ''}"
-        onclick="efSwitchTab('__totale__')">
-        📊 Totale
-      </button>`;
-  } else {
-    tabBar.style.display = 'none';
-    efCurrentUser = sess.username;
-  }
-
-  if (efCurrentUser === '__totale__') {
-    renderEFTotale();
-  } else {
-    renderEFPersonale(efCurrentUser);
-  }
-}
-
-function efSwitchTab(username) {
-  efCurrentUser = username;
-  renderEFPrivate();
-}
-
-function buildCalcBlock(totPrev, label) {
+// Helper: costruisce il blocco calcolo cifre (4 card affiancate)
+function buildCalcBlock(totPrev) {
   const al80 = totPrev * 0.80;
-  const il35 = al80 * 0.35;
-  const il75 = al80 * 0.75; // bonus: 75% di quello che rimane dopo il 20%
-  const fmt = v => v > 0 ? '€ ' + Math.round(v).toLocaleString('it-IT') : '€ 0';
+  const il35 = al80   * 0.35;
+  const il75 = al80   * 0.75;
+  const fmt  = v => v > 0 ? '€ ' + Math.round(v).toLocaleString('it-IT') : '€ 0';
   return `
     <div class="card">
-      <div class="card-header"><span class="card-title">📊 Calcolo guadagni — ${label}</span></div>
+      <div class="card-header"><span class="card-title">📊 Calcolo guadagni</span></div>
       <div class="card-body">
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
           <div style="background:var(--paper);border-radius:var(--r-lg);padding:18px;border:1px solid var(--paper3);text-align:center">
             <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Totale preventivi</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--ink)">${fmt(totPrev)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);line-height:1">${fmt(totPrev)}</div>
           </div>
           <div style="background:linear-gradient(135deg,#FEF0E7,#FDE8D8);border-radius:var(--r-lg);padding:18px;border:1px solid #FBCAC5;text-align:center">
             <div style="font-size:10px;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">−20% (netto)</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--orange)">${fmt(al80)}</div>
-            <div style="font-size:10px;color:var(--orange);opacity:.65;margin-top:4px">totale × 80%</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--orange);line-height:1">${fmt(al80)}</div>
+            <div style="font-size:10px;color:var(--orange);opacity:.6;margin-top:5px">tot × 80%</div>
           </div>
           <div style="background:linear-gradient(135deg,var(--green-l),#BBF7D0);border-radius:var(--r-lg);padding:18px;border:1px solid #86EFAC;text-align:center">
             <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">35% del netto</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--green)">${fmt(il35)}</div>
-            <div style="font-size:10px;color:var(--green);opacity:.65;margin-top:4px">netto × 35%</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:var(--green);line-height:1">${fmt(il35)}</div>
+            <div style="font-size:10px;color:var(--green);opacity:.6;margin-top:5px">netto × 35%</div>
           </div>
           <div style="background:linear-gradient(135deg,var(--accent-l),#BFDBFE);border-radius:var(--r-lg);padding:18px;border:1px solid #93C5FD;text-align:center">
             <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">75% del netto</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--accent)">${fmt(il75)}</div>
-            <div style="font-size:10px;color:var(--accent);opacity:.65;margin-top:4px">netto × 75%</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:var(--accent);line-height:1">${fmt(il75)}</div>
+            <div style="font-size:10px;color:var(--accent);opacity:.6;margin-top:5px">netto × 75%</div>
           </div>
         </div>
       </div>
     </div>`;
 }
 
+// Dashboard personale — visibile a tutti i non-viewer
 function renderEFPersonale(username) {
-  document.getElementById('ef-personal-panel').style.display = 'block';
-  document.getElementById('ef-totale-panel').style.display   = 'none';
-
   const isSelf = username === sess.username;
   document.getElementById('ef-page-sub').textContent = isSelf
     ? 'Le tue aziende completate e i tuoi guadagni'
-    : `Aziende completate di ${username}`;
+    : 'Aziende di ' + username;
 
   const miei = dati.filter(r => r.aggiunto_da === username && r.stato === '✅ Sito completato');
   const tot  = miei.reduce((s, r) => s + (Number(r.preventivo) || 0), 0);
@@ -1484,74 +1448,133 @@ function renderEFPersonale(username) {
       <div class="stat-label">Il tuo 35%</div>
     </div>`;
 
-  // Blocco calcolo cifre
-  document.getElementById('ef-calc-panel').innerHTML = buildCalcBlock(tot, isSelf ? 'le tue aziende' : username);
+  // Blocco 4 cifre
+  document.getElementById('ef-calc-panel').innerHTML = buildCalcBlock(tot);
 
-  // Aziende
+  // Aziende lista
   document.getElementById('ef-az-cnt').textContent = miei.length;
   document.getElementById('ef-az-list').innerHTML = miei.length
-    ? miei.map(r=>`<tr><td class="td-bold">${r.nome_azienda||'—'}</td><td class="td-muted">${r.settore||'—'}</td><td class="td-muted">${r.referente||'—'}</td><td class="td-mono">${fD(r.data_incontro)}</td></tr>`).join('')
-    : '<tr><td colspan="4"><div class="empty" style="padding:20px"><p>Nessuna azienda completata</p></div></td></tr>';
+    ? miei.map(r => `<tr>
+        <td class="td-bold">${r.nome_azienda||'—'}</td>
+        <td class="td-muted">${r.settore||'—'}</td>
+        <td class="td-muted">${r.referente||'—'}</td>
+        <td class="td-mono">${fD(r.data_incontro)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="4"><div class="empty" style="padding:20px"><p>Nessuna azienda completata ancora</p></div></td></tr>';
 
-  // Preventivi
+  // Preventivi lista
   document.getElementById('ef-pr-tot').textContent = fmt(tot);
   document.getElementById('ef-pr-list').innerHTML = miei.length
-    ? miei.map(r=>`<tr><td class="td-bold">${r.nome_azienda||'—'}</td><td class="td-muted">${r.settore||'—'}</td><td style="text-align:right">${fE(r.preventivo)}</td></tr>`).join('')
+    ? miei.map(r => `<tr>
+        <td class="td-bold">${r.nome_azienda||'—'}</td>
+        <td class="td-muted">${r.settore||'—'}</td>
+        <td style="text-align:right">${fE(r.preventivo)}</td>
+      </tr>`).join('')
     : '<tr><td colspan="3"><div class="empty" style="padding:20px"><p>Nessun preventivo</p></div></td></tr>';
 }
 
-function renderEFTotale() {
-  document.getElementById('ef-personal-panel').style.display = 'none';
-  document.getElementById('ef-totale-panel').style.display   = 'block';
-  document.getElementById('ef-page-sub').textContent = 'Dashboard totale — tutti gli utenti';
+// Riepilogo Totale — solo admin: tab per ogni utente + tab Totale
+let efRieTab = '__totale__';
 
-  // Tutti i dati completati (esclude viewer)
-  const nonViewer = users.filter(u => u.role !== 'viewer').map(u => u.username);
-  const tuttiComp = dati.filter(r => nonViewer.includes(r.aggiunto_da) && r.stato === '✅ Sito completato');
-  const totGlobale = tuttiComp.reduce((s, r) => s + (Number(r.preventivo)||0), 0);
-  const fmt = v => v > 0 ? '€ ' + v.toLocaleString('it-IT') : '—';
+function renderEFRiepilogo() {
+  const nonViewer = users.filter(u => u.role !== 'viewer');
+  // Tab bar
+  const tabs = document.getElementById('ef-rie-tabs');
+  tabs.innerHTML = nonViewer.map(u => `
+    <button class="ef-tab ${efRieTab === u.username ? 'active' : ''}"
+      onclick="efRieSwitch('${u.username}')">
+      ${u.username}
+    </button>`).join('') +
+    `<button class="ef-tab ${efRieTab === '__totale__' ? 'active' : ''}"
+      onclick="efRieSwitch('__totale__')">
+      📊 Totale
+    </button>`;
 
-  // Stat cards totale
-  document.getElementById('ef-stats-totale').innerHTML = `
-    <div class="stat-card c-purple">
-      <div class="stat-icon">🌐</div>
-      <div class="stat-val">${tuttiComp.length}</div>
-      <div class="stat-label">Siti completati (totale)</div>
+  if (efRieTab === '__totale__') {
+    renderEFRieTotale(nonViewer);
+  } else {
+    renderEFRieUtente(efRieTab);
+  }
+}
+
+function efRieSwitch(tab) {
+  efRieTab = tab;
+  renderEFRiepilogo();
+}
+
+function renderEFRieUtente(username) {
+  const miei = dati.filter(r => r.aggiunto_da === username && r.stato === '✅ Sito completato');
+  const tot  = miei.reduce((s, r) => s + (Number(r.preventivo) || 0), 0);
+  const fmt  = v => v > 0 ? '€ ' + v.toLocaleString('it-IT') : '—';
+
+  document.getElementById('ef-rie-content').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card c-purple"><div class="stat-icon">🏆</div><div class="stat-val">${miei.length}</div><div class="stat-label">Siti completati — ${username}</div></div>
+      <div class="stat-card c-green"><div class="stat-icon">💶</div><div class="stat-val" style="font-size:${tot>99999?'16px':'24px'}">${fmt(tot)}</div><div class="stat-label">Preventivi totali</div></div>
+      <div class="stat-card c-gold"><div class="stat-icon">✨</div><div class="stat-val" style="font-size:${(tot*.8*.35)>99999?'16px':'24px'}">${tot>0?'€ '+Math.round(tot*.8*.35).toLocaleString('it-IT'):'—'}</div><div class="stat-label">35% netto</div></div>
     </div>
-    <div class="stat-card c-green">
-      <div class="stat-icon">💶</div>
-      <div class="stat-val" style="font-size:${totGlobale>99999?'16px':'24px'}">${fmt(totGlobale)}</div>
-      <div class="stat-label">Preventivi globali</div>
-    </div>
-    <div class="stat-card c-gold">
-      <div class="stat-icon">✨</div>
-      <div class="stat-val" style="font-size:${(totGlobale*.8*.35)>99999?'16px':'24px'}">${totGlobale>0?'€ '+Math.round(totGlobale*.8*.35).toLocaleString('it-IT'):'—'}</div>
-      <div class="stat-label">35% globale</div>
-    </div>
-    <div class="stat-card c-blue">
-      <div class="stat-icon">👥</div>
-      <div class="stat-val">${nonViewer.length}</div>
-      <div class="stat-label">Utenti attivi</div>
+    ${buildCalcBlock(tot)}
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><span class="card-title">🏢 Aziende completate — ${username}</span></div>
+      <div style="overflow:auto"><table>
+        <thead><tr><th>Nome Azienda</th><th>Settore</th><th>Referente</th><th>Data</th><th style="text-align:right">Preventivo</th></tr></thead>
+        <tbody>${miei.length
+          ? miei.map(r=>`<tr>
+              <td class="td-bold">${r.nome_azienda||'—'}</td>
+              <td class="td-muted">${r.settore||'—'}</td>
+              <td class="td-muted">${r.referente||'—'}</td>
+              <td class="td-mono">${fD(r.data_incontro)}</td>
+              <td style="text-align:right">${fE(r.preventivo)}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="5"><div class="empty" style="padding:20px"><p>Nessuna azienda</p></div></td></tr>'}
+        </tbody>
+      </table></div>
     </div>`;
+}
 
-  // Blocco calcolo totale
-  document.getElementById('ef-calc-totale').innerHTML = buildCalcBlock(totGlobale, 'totale globale');
+function renderEFRieTotale(nonViewer) {
+  const tuttiComp = dati.filter(r =>
+    nonViewer.some(u => u.username === r.aggiunto_da) && r.stato === '✅ Sito completato'
+  );
+  const totG = tuttiComp.reduce((s, r) => s + (Number(r.preventivo)||0), 0);
+  const fmt  = v => v > 0 ? '€ ' + v.toLocaleString('it-IT') : '—';
 
-  // Tabella per utente
-  document.getElementById('ef-totale-list').innerHTML = nonViewer.map(u => {
-    const uDati = tuttiComp.filter(r => r.aggiunto_da === u);
-    const uTot  = uDati.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
-    const u80   = uTot * 0.80;
-    const u35   = u80  * 0.35;
-    const f = v => v>0 ? '€ '+Math.round(v).toLocaleString('it-IT') : '—';
-    return `<tr>
-      <td><strong>${u}</strong></td>
-      <td><span style="font-family:'JetBrains Mono',monospace">${uDati.length}</span></td>
-      <td style="text-align:right">${fE(uTot||null)}</td>
-      <td style="text-align:right;color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:12px">${f(u80)}</td>
-      <td style="text-align:right;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${f(u35)}</td>
-    </tr>`;
-  }).join('');
+  document.getElementById('ef-rie-content').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card c-purple"><div class="stat-icon">🌐</div><div class="stat-val">${tuttiComp.length}</div><div class="stat-label">Totale siti completati</div></div>
+      <div class="stat-card c-green"><div class="stat-icon">💶</div><div class="stat-val" style="font-size:${totG>99999?'16px':'24px'}">${fmt(totG)}</div><div class="stat-label">Preventivi globali</div></div>
+      <div class="stat-card c-gold"><div class="stat-icon">✨</div><div class="stat-val" style="font-size:${(totG*.8*.35)>99999?'16px':'24px'}">${totG>0?'€ '+Math.round(totG*.8*.35).toLocaleString('it-IT'):'—'}</div><div class="stat-label">35% globale</div></div>
+      <div class="stat-card c-blue"><div class="stat-icon">👥</div><div class="stat-val">${nonViewer.length}</div><div class="stat-label">Utenti attivi</div></div>
+    </div>
+    ${buildCalcBlock(totG)}
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><span class="card-title">📋 Riepilogo per utente</span></div>
+      <div style="overflow:auto"><table>
+        <thead><tr>
+          <th>Utente</th><th style="text-align:center">Siti</th>
+          <th style="text-align:right">Tot. Preventivi</th>
+          <th style="text-align:right">−20% (netto)</th>
+          <th style="text-align:right">35% netto</th>
+          <th style="text-align:right">75% netto</th>
+        </tr></thead>
+        <tbody>${nonViewer.map(u => {
+          const uD  = tuttiComp.filter(r => r.aggiunto_da === u.username);
+          const uT  = uD.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
+          const u80 = uT * 0.80;
+          const u35 = u80 * 0.35;
+          const u75 = u80 * 0.75;
+          const f   = v => v>0 ? '€ '+Math.round(v).toLocaleString('it-IT') : '—';
+          return `<tr>
+            <td><strong>${u.username}</strong> <span class="urb ${u.role==='admin'?'urb-admin':'urb-user'}" style="font-size:9px">${u.role}</span></td>
+            <td style="text-align:center;font-family:'JetBrains Mono',monospace">${uD.length}</td>
+            <td style="text-align:right">${fE(uT||null)}</td>
+            <td style="text-align:right;color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:12px">${f(u80)}</td>
+            <td style="text-align:right;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${f(u35)}</td>
+            <td style="text-align:right;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${f(u75)}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
 }
 
 // ── EXPORT / IMPORT ───────────────────────────────────
