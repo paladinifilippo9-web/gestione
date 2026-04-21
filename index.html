@@ -2032,7 +2032,7 @@ function pulisci() {
 
 // ── DELETE ────────────────────────────────────────────
 function askDel(id) {
-  if (sess.role !== 'admin') { toast('Solo l\'admin può eliminare aziende', 'err'); return; }
+  if (sess.role !== 'admin') { toast("Solo l'admin può eliminare aziende", "err"); return; } return; }
   delId = id; document.getElementById('mod-del').classList.add('open');
 }
 async function doDel() {
