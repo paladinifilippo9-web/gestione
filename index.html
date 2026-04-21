@@ -404,6 +404,10 @@ tr:hover .row-actions{opacity:1}
 .cal-hour-cell.weekend:hover{background:rgba(26,86,232,.04)}
 .cal-event{position:absolute;left:2px;right:2px;min-height:20px;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border-radius:5px;padding:3px 7px;font-size:10px;font-weight:600;overflow:hidden;cursor:none;z-index:2;box-shadow:0 2px 8px rgba(26,86,232,.3);border-left:2px solid rgba(255,255,255,.4)}
 .cal-event:hover{filter:brightness(1.08);box-shadow:0 3px 12px rgba(26,86,232,.4)}
+.cal-event.chiamata{background:linear-gradient(135deg,#0E7490,#06B6D4);box-shadow:0 2px 8px rgba(14,116,144,.3)}
+.cal-event.chiamata:hover{box-shadow:0 3px 12px rgba(14,116,144,.4)}
+.ev-chip-incontro{background:var(--accent-l);color:var(--accent);border:1px solid rgba(26,86,232,.2)}
+.ev-chip-chiamata{background:var(--teal-l);color:var(--teal);border:1px solid rgba(14,116,144,.2)}
 .cal-now-line{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:3;pointer-events:none}
 .cal-now-line::before{content:'';width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;left:-4px;top:-3px}
 .cal-month-cell{min-height:90px;border:1px solid var(--paper3);border-top:none;border-left:none;padding:6px;cursor:none;transition:background .1s;background:var(--white)}
@@ -631,7 +635,7 @@ tr:hover .row-actions{opacity:1}
                 <button class="dash-tab active" id="dtab-urgenti" onclick="dashTab('urgenti')">⚡ Urgenti</button>
                 <button class="dash-tab" id="dtab-oggi" onclick="dashTab('oggi')">📅 Oggi</button>
               </div>
-              <button class="btn btn-ghost btn-xs" id="dash-auto-btn" onclick="toggleDashAuto()" title="Auto">▶</button>
+              <div style="font-size:10px;color:var(--ink4);font-style:italic" id="dash-auto-label">scorre automaticamente</div>
             </div>
             <div id="dash-panel-urgenti" style="padding:12px 14px"></div>
             <div id="dash-panel-oggi" style="padding:12px 14px;display:none"></div>
@@ -878,9 +882,14 @@ tr:hover .row-actions{opacity:1}
       <!-- MODAL EVENTO -->
       <div class="overlay" id="mod-evento">
         <div class="modal" style="max-width:460px">
-          <h3 id="evento-modal-title">Nuovo incontro</h3>
-          <p style="margin-bottom:16px">Inserisci i dettagli dell'appuntamento</p>
+          <h3 id="evento-modal-title">Nuovo evento</h3>
           <input type="hidden" id="ev-id">
+          <!-- Tipo evento -->
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <button class="ev-tipo-btn active" id="ev-tipo-incontro" onclick="setEvTipo('incontro')" style="flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600;font-size:13px;cursor:none;transition:all .15s">🤝 Incontro</button>
+            <button class="ev-tipo-btn" id="ev-tipo-chiamata" onclick="setEvTipo('chiamata')" style="flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--paper3);background:var(--paper);color:var(--ink3);font-weight:600;font-size:13px;cursor:none;transition:all .15s">📞 Chiamata</button>
+          </div>
+          <input type="hidden" id="ev-tipo" value="incontro">
           <div class="field" style="margin-bottom:12px"><label>Titolo *</label><input type="text" id="ev-titolo" placeholder="es. Incontro con Pizzeria Da Mario"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
             <div class="field"><label>Data *</label><input type="date" id="ev-data"></div>
@@ -889,7 +898,7 @@ tr:hover .row-actions{opacity:1}
           <div class="field" style="margin-bottom:12px"><label>Azienda collegata</label>
             <select id="ev-azienda"><option value="">— Nessuna —</option></select>
           </div>
-          <div class="field" style="margin-bottom:20px"><label>Note</label><textarea id="ev-note" placeholder="Dettagli aggiuntivi…" style="min-height:60px"></textarea></div>
+          <div class="field" style="margin-bottom:16px"><label>Note</label><textarea id="ev-note" placeholder="Dettagli aggiuntivi…" style="min-height:56px"></textarea></div>
           <div class="modal-actions">
             <button class="btn btn-danger btn-sm" id="ev-del-btn" onclick="deleteEvento()" style="display:none;margin-right:auto">Elimina</button>
             <button class="btn btn-ghost" onclick="closeM('mod-evento')">Annulla</button>
@@ -938,24 +947,62 @@ tr:hover .row-actions{opacity:1}
   </div>
 </div>
 
-<!-- MODAL AI RIASSUNTO AZIENDA -->
+<!-- MODAL AZIENDA: modifica + AI -->
 <div class="overlay" id="mod-azienda">
-  <div class="modal" style="max-width:520px;width:95%">
-    <h3 id="mod-az-nome">—</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px" id="mod-az-badges"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;margin-bottom:14px" id="mod-az-info"></div>
-    <div style="font-size:12px;color:var(--ink3);margin-bottom:4px;font-weight:500">📝 Note</div>
-    <div id="mod-az-note" style="font-size:13px;color:var(--ink2);margin-bottom:16px;line-height:1.6;background:var(--paper);border-radius:var(--r);padding:10px 12px;border:1px solid var(--paper3)">—</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;color:var(--ink3);font-weight:500">🤖 Riassunto intelligente</div>
-      <button class="btn btn-ghost btn-xs" onclick="generaRiassunto()">↻ Rigenera</button>
+  <div class="modal" style="max-width:560px;width:95%;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h3 id="mod-az-nome" style="margin-bottom:0">—</h3>
+      <button class="btn btn-ghost btn-xs" onclick="closeM('mod-azienda')">✕</button>
     </div>
-    <div id="mod-az-ai" class="ai-summary-box">
-      <span style="color:var(--ink4);font-style:italic">Clicca "Rigenera" per analizzare le note con l'AI</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="mod-az-badges"></div>
+
+    <!-- FORM MODIFICA (nascosto per viewer) -->
+    <div id="mod-az-form">
+      <input type="hidden" id="maz-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="field"><label>Settore</label><input type="text" id="maz-settore"></div>
+        <div class="field"><label>Nome Azienda</label><input type="text" id="maz-nome"></div>
+        <div class="field"><label>Telefono / Email</label><input type="text" id="maz-cont"></div>
+        <div class="field"><label>Referente</label><input type="text" id="maz-ref"></div>
+        <div class="field"><label>Stato</label>
+          <select id="maz-stato">
+            <option value="">— —</option>
+            <option>🔴 Da contattare</option><option>🟡 Contattata</option>
+            <option>🟢 Interessata</option><option>🟠 Incontro fissato</option>
+            <option>🔵 Sito da realizzare</option><option>⚫ Non interessata</option>
+            <option>🟤 Non ha risposto</option><option>🔁 Da richiamare</option>
+            <option>✅ Sito completato</option>
+          </select>
+        </div>
+        <div class="field"><label>Priorità</label>
+          <select id="maz-prio">
+            <option value="">— —</option>
+            <option>🔴 Alta</option><option>🟡 Media</option><option>🟢 Bassa</option>
+          </select>
+        </div>
+        <div class="field"><label>Preventivo (€)</label><input type="number" id="maz-prev" min="0"></div>
+        <div class="field"><label>Data Contatto</label><input type="date" id="maz-dc"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label>
+        <textarea id="maz-note" style="min-height:70px" placeholder="Note operative…"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn btn-primary btn-sm" onclick="salvaModAz()">✓ Salva modifiche</button>
+        <button class="btn btn-danger btn-sm" id="maz-del-btn" onclick="askDelFromModal()">✕ Elimina</button>
+      </div>
     </div>
-    <div class="modal-actions" style="margin-top:16px">
-      <button class="btn btn-ghost btn-sm" onclick="editFromModal()" id="mod-az-edit">✎ Modifica</button>
-      <button class="btn btn-ghost" onclick="closeM('mod-azienda')">Chiudi</button>
+
+    <!-- AI SECTION (nascosto per viewer) -->
+    <div id="mod-az-ai-section">
+      <div style="border-top:1px solid var(--paper3);padding-top:14px;margin-top:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:12px;color:var(--ink3);font-weight:600">🤖 Suggerimento AI</div>
+          <button class="btn btn-ghost btn-xs" onclick="generaRiassunto()" id="ai-regen-btn">Genera</button>
+        </div>
+        <div id="mod-az-ai" class="ai-summary-box">
+          <span style="color:var(--ink4);font-style:italic;font-size:12px">Premi "Genera" per ottenere un suggerimento su come approcciare questa azienda</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1353,6 +1400,8 @@ function renderDash() {
 
   renderDashPanel('urgenti');
   requestAnimationFrame(()=>renderCharts());
+  // Avvia scorrimento automatico
+  if (typeof startDashAuto === 'function') { clearInterval(dashAutoInterval); setTimeout(startDashAuto,2000); }
 }
 
 // ── DASHBOARD WIDGET SCORRIMENTO ──────────────────────
@@ -1383,28 +1432,33 @@ function renderDashPanel(which) {
         : '<div style="text-align:center;padding:20px;font-size:13px;color:var(--ink4)">Nessun incontro oggi 📭</div>');
   }
 }
+let _dashWhich = 'urgenti';
+
 function dashTab(which) {
-  stopDashAuto();
+  // Click manuale: ferma temporaneamente l'auto, poi riprende
+  _dashWhich = which;
   renderDashPanel(which);
+  // Riavvia dopo 6 secondi di inattività
+  clearTimeout(dashAutoTimer);
+  dashAutoTimer = setTimeout(startDashAuto, 6000);
 }
 
-let _dashWhich = 'urgenti';
-function toggleDashAuto() {
-  if (dashAutoActive) { stopDashAuto(); return; }
-  dashAutoActive = true;
-  document.getElementById('dash-auto-btn').textContent = '⏸';
+let dashAutoTimer = null;
+
+function startDashAuto() {
+  clearInterval(dashAutoInterval);
   dashAutoInterval = setInterval(()=>{
     _dashWhich = _dashWhich==='urgenti'?'oggi':'urgenti';
     renderDashPanel(_dashWhich);
-    document.getElementById('dtab-urgenti').classList.toggle('active',_dashWhich==='urgenti');
-    document.getElementById('dtab-oggi').classList.toggle('active',_dashWhich==='oggi');
-  }, 4000);
+    const tu = document.getElementById('dtab-urgenti');
+    const to = document.getElementById('dtab-oggi');
+    if (tu) tu.classList.toggle('active',_dashWhich==='urgenti');
+    if (to) to.classList.toggle('active',_dashWhich==='oggi');
+  }, 5000);
 }
-function stopDashAuto() {
-  dashAutoActive = false;
-  clearInterval(dashAutoInterval);
-  document.getElementById('dash-auto-btn').textContent = '▶';
-}
+
+function toggleDashAuto() {} // mantenuto per compatibilità
+function stopDashAuto() { clearInterval(dashAutoInterval); }
 
 // ── GRAFICI ───────────────────────────────────────────
 function renderCharts() {
@@ -1471,68 +1525,154 @@ function renderCharts() {
 }
 
 // ── OPEN AZIENDA MODAL ────────────────────────────────
+// ── OPEN AZIENDA MODAL ──────────────────────────────
 function openAzienda(id) {
   const r = dati.find(x=>String(x.id)===String(id));
   if (!r) return;
   currentAziendaId = id;
-  document.getElementById('mod-az-nome').textContent = r.nome_azienda||'—';
-  document.getElementById('mod-az-badges').innerHTML = [bS(r.stato),bP(r.priorita)].join('');
-  document.getElementById('mod-az-info').innerHTML = [
-    r.settore      ? `<div><span style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Settore</span><div style="font-weight:500;margin-top:2px">${r.settore}</div></div>` : '',
-    r.telefono_email? `<div><span style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Contatto</span><div style="font-weight:500;margin-top:2px">${r.telefono_email}</div></div>` : '',
-    r.referente    ? `<div><span style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Referente</span><div style="font-weight:500;margin-top:2px">${r.referente}</div></div>` : '',
-    r.preventivo   ? `<div><span style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Preventivo</span><div style="font-weight:500;margin-top:2px;color:var(--green)">€ ${Number(r.preventivo).toLocaleString('it-IT')}</div></div>` : '',
-  ].join('');
-  document.getElementById('mod-az-note').textContent = r.note || 'Nessuna nota';
-  document.getElementById('mod-az-ai').innerHTML = '<span style="color:var(--ink4);font-style:italic">Clicca "Rigenera" per analizzare le note</span>';
-  document.getElementById('mod-azienda').classList.add('open');
 
-  // Auto genera se ci sono note
-  if (r.note && r.note.trim()) setTimeout(generaRiassunto, 300);
+  const isViewer = sess.role === 'viewer';
+  const isAdmin  = sess.role === 'admin';
+  const isOwner  = r.aggiunto_da === sess.username;
+  const canEdit  = isAdmin || isOwner;
+
+  // Nome e badge
+  document.getElementById('mod-az-nome').textContent = r.nome_azienda||'—';
+  document.getElementById('mod-az-badges').innerHTML = [bS(r.stato), bP(r.priorita)].join('') +
+    (r.aggiunto_da ? `<span style="font-size:10px;color:var(--ink3);padding:3px 8px;background:var(--paper2);border-radius:20px;border:1px solid var(--paper3)">👤 ${r.aggiunto_da}</span>` : '');
+
+  const formEl     = document.getElementById('mod-az-form');
+  const aiSecEl    = document.getElementById('mod-az-ai-section');
+  const delBtn     = document.getElementById('maz-del-btn');
+
+  if (isViewer) {
+    // Viewer: mostra solo info base, niente form né AI
+    formEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;margin-bottom:12px">
+      ${r.settore?`<div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Settore</div><div style="font-weight:500">${r.settore}</div></div>`:''}
+      ${r.telefono_email?`<div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Contatto</div><div style="font-weight:500">${r.telefono_email}</div></div>`:''}
+      ${r.referente?`<div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Referente</div><div style="font-weight:500">${r.referente}</div></div>`:''}
+    </div><div style="text-align:center;padding:12px;color:var(--ink4);font-size:12px;font-style:italic">Le note non sono visibili per i visualizzatori</div>`;
+    aiSecEl.style.display = 'none';
+  } else {
+    // Popola form
+    document.getElementById('maz-id').value      = r.id;
+    document.getElementById('maz-settore').value = r.settore||'';
+    document.getElementById('maz-nome').value    = r.nome_azienda||'';
+    document.getElementById('maz-cont').value    = r.telefono_email||'';
+    document.getElementById('maz-ref').value     = r.referente||'';
+    document.getElementById('maz-stato').value   = r.stato||'';
+    document.getElementById('maz-prio').value    = r.priorita||'';
+    document.getElementById('maz-prev').value    = r.preventivo!=null?r.preventivo:'';
+    document.getElementById('maz-dc').value      = r.data_contatto||'';
+    document.getElementById('maz-note').value    = r.note||'';
+
+    // Mostra/nascondi bottone elimina
+    if (delBtn) delBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+
+    // Disabilita form se non può modificare
+    const inputs = formEl.querySelectorAll('input,select,textarea');
+    inputs.forEach(el => { el.disabled = !canEdit; el.style.opacity = canEdit?'1':'0.6'; });
+    const saveBtn = formEl.querySelector('button.btn-primary');
+    if (saveBtn) saveBtn.style.display = canEdit ? 'inline-flex' : 'none';
+
+    aiSecEl.style.display = 'block';
+    // Reset AI box
+    document.getElementById('mod-az-ai').innerHTML = '<span style="color:var(--ink4);font-style:italic;font-size:12px">Premi "Genera" per un suggerimento su come approcciare questa azienda</span>';
+    // Genera automaticamente se ci sono note
+    if (r.note && r.note.trim().length > 5) {
+      setTimeout(generaRiassunto, 400);
+    }
+  }
+
+  document.getElementById('mod-azienda').classList.add('open');
 }
 
-function editFromModal() {
+async function salvaModAz() {
+  const id = document.getElementById('maz-id').value;
+  const nome = document.getElementById('maz-nome').value.trim();
+  const sett = document.getElementById('maz-settore').value.trim();
+  if (!nome||!sett) { toast('Nome e settore obbligatori','err'); return; }
+
+  const row = {
+    settore:        sett,
+    nome_azienda:   nome,
+    telefono_email: document.getElementById('maz-cont').value.trim()||null,
+    referente:      document.getElementById('maz-ref').value.trim()||null,
+    stato:          document.getElementById('maz-stato').value||null,
+    priorita:       document.getElementById('maz-prio').value||null,
+    preventivo:     document.getElementById('maz-prev').value!==''?Number(document.getElementById('maz-prev').value):null,
+    data_contatto:  document.getElementById('maz-dc').value||null,
+    note:           document.getElementById('maz-note').value.trim()||null,
+  };
+  try {
+    await dbUpdate(id, row);
+    const idx = dati.findIndex(r=>String(r.id)===String(id));
+    if (idx!==-1) dati[idx] = {...dati[idx], ...row};
+    closeM('mod-azienda');
+    renderDash(); renderTab(); updCnt();
+    toast('Azienda aggiornata! ✓');
+  } catch(e) { toast('Errore: '+e.message,'err'); }
+}
+
+function askDelFromModal() {
+  const id = document.getElementById('maz-id').value;
+  if (!id) return;
+  delId = id;
   closeM('mod-azienda');
-  if (currentAziendaId) editR(currentAziendaId);
+  document.getElementById('mod-del').classList.add('open');
 }
 
 async function generaRiassunto() {
   const r = dati.find(x=>String(x.id)===String(currentAziendaId));
   if (!r) return;
   const box = document.getElementById('mod-az-ai');
-  box.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Analisi in corso…</span></div>';
+  const btn = document.getElementById('ai-regen-btn');
+  if (btn) { btn.disabled=true; btn.textContent='...'; }
+  box.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px;font-size:12px">Analisi in corso…</span></div>';
 
-  const prompt = `Sei un assistente commerciale per un'agenzia web italiana. Analizza le informazioni sull'azienda e scrivi un riassunto pratico in italiano (4-5 righe max) su come approcciarla, cosa proporre e come chiudere la vendita.
+  // Genera riassunto senza AI - logica locale basata sui dati
+  const note = (r.note||'').toLowerCase();
+  const stato = r.stato||'';
+  const settore = r.settore||'';
 
-Azienda: ${r.nome_azienda||'—'}
-Settore: ${r.settore||'non specificato'}
-Stato pipeline: ${r.stato||'non specificato'}
-Note operative: ${r.note||'nessuna nota'}
-Referente: ${r.referente||'non specificato'}
+  // Analisi locale intelligente
+  let analisi = [];
 
-Scrivi un testo diretto e pratico per il commerciale. Focus sulle opportunità concrete basate sulle note.`;
+  // Analisi social media dalle note
+  if (note.includes('instagram') || note.includes('ig')) analisi.push('Ha presenza su Instagram');
+  if (note.includes('facebook') || note.includes('fb')) analisi.push('Ha presenza su Facebook');
+  if (note.includes('solo ig') || note.includes('solo instagram')) analisi.push('⚠️ Solo Instagram — ottima opportunità per proporre sito');
+  if (note.includes('solo facebook') || note.includes('solo fb')) analisi.push('⚠️ Solo Facebook — ottima opportunità per proporre sito');
+  if (note.includes('sia facebook') && note.includes('ig')) analisi.push('Ha sia Facebook che Instagram — già digital, proponi sito come hub centrale');
+  if (note.includes('sito') && (note.includes('vecchio') || note.includes('datato'))) analisi.push('🔄 Sito vecchio — proponi redesign moderno e ottimizzazione SEO');
+  if (note.includes('sito') && note.includes('non funzion')) analisi.push('🚨 Sito non funzionante — urgente, proponi rifacimento rapido');
+  if (note.includes('interessat')) analisi.push('✅ Ha mostrato interesse — segui velocemente');
+  if (note.includes('richiamar') || note.includes('richiam')) analisi.push('📞 Da richiamare — fissa data e ora precisa');
+  if (note.includes('preventivo')) analisi.push('💶 Preventivo già discusso — verifica disponibilità');
 
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:400,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    if (!resp.ok) throw new Error('HTTP '+resp.status);
-    const data = await resp.json();
-    const text = data.content?.find(b=>b.type==='text')?.text || 'Nessuna risposta.';
-    box.innerHTML = '<div style="line-height:1.7">'+text.replace(/\n\n/g,'</div><div style="line-height:1.7;margin-top:8px">').replace(/\n/g,'<br>')+'</div>';
-  } catch(e) {
-    console.error(e);
-    box.innerHTML = `<div style="color:var(--orange);font-size:12px;padding:8px;background:var(--orange-l);border-radius:6px">
-      <strong>Nota:</strong> L'AI funziona solo quando il sito è pubblicato online (GitHub Pages/Netlify). 
-      In locale il browser blocca le chiamate API per sicurezza (CORS).
-    </div>`;
+  // Analisi stato pipeline
+  if (stato.includes('Da contattare')) analisi.push(`📋 Non ancora contattata — prepara presentazione per il settore ${settore}`);
+  if (stato.includes('Interessata')) analisi.push('🎯 È interessata — proponi incontro di approfondimento il prima possibile');
+  if (stato.includes('Incontro fissato')) analisi.push('📅 Incontro già fissato — prepara proposta personalizzata e preventivo');
+  if (stato.includes('Sito da realizzare')) analisi.push('🚀 Già cliente! — focus su onboarding e raccolta contenuti');
+  if (stato.includes('Non ha risposto')) analisi.push('🔄 Non ha risposto — prova a ricontattare via canale diverso (es. WhatsApp)');
+
+  // Se non trovato nulla di specifico
+  if (analisi.length === 0) {
+    if (r.note && r.note.trim()) {
+      analisi.push(`📝 Note: "${r.note.substring(0,120)}${r.note.length>120?'…':''}"`);
+    }
+    analisi.push(`🏢 Settore ${settore} — ricerca competitors online per capire il posizionamento`);
+    analisi.push(`Stato attuale: ${stato} — adatta l'approccio di conseguenza`);
   }
+
+  const html = `<div style="font-size:12.5px;line-height:1.7;color:var(--ink2)">
+    ${analisi.map(a=>`<div style="padding:4px 0;border-bottom:1px solid var(--paper3)">${a}</div>`).join('')}
+    ${r.preventivo?`<div style="padding:4px 0;color:var(--green);font-weight:500">💶 Preventivo stimato: €${Number(r.preventivo).toLocaleString('it-IT')}</div>`:''}
+  </div>`;
+  
+  box.innerHTML = html;
+  if (btn) { btn.disabled=false; btn.textContent='Rigenera'; }
 }
 
 
@@ -1614,7 +1754,7 @@ function renderCalWeek() {
       const isNow  = isCurrentWeek && d.toDateString()===today.toDateString() && h===nowH;
       html += `<div class="cal-hour-cell${isWknd}" onclick="openEventModal('${ds}','${String(h).padStart(2,'0')}:00')">
         ${isNow?`<div class="cal-now-line" style="top:${nowM/60*52}px"></div>`:''}
-        ${hEvs.map(e=>`<div class="cal-event" onclick="event.stopPropagation();editEvento('${e.id}')" title="${e.titolo}">${e.ora} ${e.titolo}</div>`).join('')}
+        ${hEvs.map(e=>`<div class="cal-event ${e.tipo==='chiamata'?'chiamata':''}" onclick="event.stopPropagation();editEvento('${e.id}')" title="${e.titolo}">${e.tipo==='chiamata'?'📞':'🤝'} ${e.ora} ${e.titolo}</div>`).join('')}
       </div>`;
     });
   }
@@ -1650,7 +1790,7 @@ function renderCalMonth() {
           ? `<span style="background:var(--accent);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${d}</span>`
           : `<span style="color:${isWk?'var(--ink3)':'var(--ink2)'}">${d}</span>`}
       </div>
-      ${dEvs.slice(0,3).map(e=>`<div style="background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.ora?e.ora+' ':''}${e.titolo}</div>`).join('')}
+      ${dEvs.slice(0,3).map(e=>`<div style="background:${e.tipo==='chiamata'?'linear-gradient(135deg,#0E7490,#06B6D4)':'linear-gradient(135deg,var(--accent),#3B82F6)'};color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.tipo==='chiamata'?'📞':'🤝'} ${e.ora?e.ora+' ':''}${e.titolo}</div>`).join('')}
       ${dEvs.length>3?`<div style="font-size:10px;color:var(--ink3);padding-left:2px">+${dEvs.length-3} altri</div>`:''}
     </div>`;
   }
@@ -1674,7 +1814,8 @@ function openEventModal(data, ora) {
   document.getElementById('ev-ora').value    = ora || '09:00';
   document.getElementById('ev-note').value   = '';
   document.getElementById('ev-del-btn').style.display = 'none';
-  document.getElementById('evento-modal-title').textContent = 'Nuovo incontro';
+  document.getElementById('evento-modal-title').textContent = 'Nuovo evento';
+  setEvTipo('incontro');
   const sel = document.getElementById('ev-azienda');
   sel.innerHTML = '<option value="">— Nessuna —</option>'+
     dati.filter(r=>r.aggiunto_da===sess.username).map(r=>`<option value="${r.nome_azienda}">${r.nome_azienda}</option>`).join('');
@@ -1689,11 +1830,25 @@ function editEvento(id) {
   document.getElementById('ev-ora').value    = e.ora||'09:00';
   document.getElementById('ev-note').value   = e.note||'';
   document.getElementById('ev-del-btn').style.display = 'inline-flex';
-  document.getElementById('evento-modal-title').textContent = 'Modifica incontro';
+  document.getElementById('evento-modal-title').textContent = 'Modifica evento';
+  setEvTipo(e.tipo||'incontro');
   const sel = document.getElementById('ev-azienda');
   sel.innerHTML = '<option value="">— Nessuna —</option>'+
     dati.filter(r=>r.aggiunto_da===sess.username).map(r=>`<option value="${r.nome_azienda}" ${r.nome_azienda===e.azienda?'selected':''}>${r.nome_azienda}</option>`).join('');
   document.getElementById('mod-evento').classList.add('open');
+}
+
+function setEvTipo(tipo) {
+  document.getElementById('ev-tipo').value = tipo;
+  const bi = document.getElementById('ev-tipo-incontro');
+  const bc = document.getElementById('ev-tipo-chiamata');
+  if (tipo==='incontro') {
+    bi.style.cssText = 'flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600;font-size:13px;cursor:none;transition:all .15s';
+    bc.style.cssText = 'flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--paper3);background:var(--paper);color:var(--ink3);font-weight:600;font-size:13px;cursor:none;transition:all .15s';
+  } else {
+    bc.style.cssText = 'flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--teal);background:var(--teal-l);color:var(--teal);font-weight:600;font-size:13px;cursor:none;transition:all .15s';
+    bi.style.cssText = 'flex:1;padding:10px;border-radius:var(--r);border:2px solid var(--paper3);background:var(--paper);color:var(--ink3);font-weight:600;font-size:13px;cursor:none;transition:all .15s';
+  }
 }
 
 function salvaEvento() {
@@ -1702,12 +1857,15 @@ function salvaEvento() {
   if (!titolo||!data) { toast('Inserisci almeno titolo e data','err'); return; }
   const evs = getEventi();
   const id  = document.getElementById('ev-id').value;
-  const ev  = { id:id||Date.now().toString(), titolo, data, ora:document.getElementById('ev-ora').value, azienda:document.getElementById('ev-azienda').value, note:document.getElementById('ev-note').value.trim() };
+  const tipo = document.getElementById('ev-tipo')?.value || 'incontro';
+  const ev  = { id:id||Date.now().toString(), titolo, data, ora:document.getElementById('ev-ora').value, azienda:document.getElementById('ev-azienda').value, note:document.getElementById('ev-note').value.trim(), tipo };
   if (id) { const idx=evs.findIndex(e=>e.id===id); if(idx!==-1)evs[idx]=ev; } else evs.push(ev);
   saveEventi(evs);
   closeM('mod-evento');
   renderCalendario();
-  toast(id?'Incontro modificato! ✓':'Incontro aggiunto! ✓');
+  // Aggiorna anche dashboard panel oggi
+  renderDashPanel(document.getElementById('dtab-oggi')?.classList.contains('active')?'oggi':'urgenti');
+  toast(id?'Evento modificato! ✓':'Evento aggiunto! ✓');
 }
 
 function deleteEvento() {
@@ -2303,22 +2461,21 @@ function chatSug(text) {
   sendChat();
 }
 
-async function sendChat() {
+function sendChat() {
   const inp = document.getElementById('chat-input');
   const msg = inp.value.trim();
   if (!msg) return;
   inp.value = '';
   addChatMsg(msg, 'user');
 
-  // Loading
-  const msgs = document.getElementById('chat-messages');
-  const loading = document.createElement('div');
-  loading.className = 'chat-msg loading';
-  loading.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
-  msgs.appendChild(loading);
-  msgs.scrollTop = msgs.scrollHeight;
+  // Risposta intelligente locale (no API, funziona sempre)
+  setTimeout(() => {
+    const risposta = elaboraRisposta(msg.toLowerCase());
+    addChatMsg(risposta, 'bot');
+  }, 400);
+}
 
-  // Costruisci contesto dati in base al ruolo
+function elaboraRisposta(msg) {
   const isAdmin  = sess.role === 'admin';
   const isViewer = sess.role === 'viewer';
   const today    = new Date().toISOString().split('T')[0];
@@ -2326,70 +2483,177 @@ async function sendChat() {
   const mieiComp = miei.filter(r => r.stato === '✅ Sito completato');
   const mioTot   = mieiComp.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
   const mio35    = Math.round(mioTot*0.8*0.35);
-  const evOggi   = isViewer ? [] : (typeof getEventi==='function' ? getEventi().filter(e=>e.data===today) : []);
   const urgenti  = miei.filter(r=>['🔴 Da contattare','🔁 Da richiamare','🟠 Incontro fissato'].includes(r.stato));
+  const evOggi   = isViewer ? [] : getEventi().filter(e=>e.data===today);
+  const dataFmt  = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
 
-  let context = '';
-  if (isViewer) {
-    context = `L'utente è un VISUALIZZATORE. Può solo vedere riepilogo aziende totali.
-Aziende totali nel sistema: ${dati.length}
-Suddivisione per stato: ${STATI.map(s=>`${s.v}: ${dati.filter(r=>r.stato===s.v).length}`).join(', ')}`;
-  } else if (isAdmin) {
-    const totAll = dati.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
-    const compAll = dati.filter(r=>r.stato==='✅ Sito completato').length;
-    const perUtente = users.filter(u=>u.role!=='viewer').map(u=>{
-      const ud = dati.filter(r=>r.aggiunto_da===u.username);
-      const uc = ud.filter(r=>r.stato==='✅ Sito completato');
-      const ut = uc.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
-      return `${u.username}: ${ud.length} aziende totali, ${uc.length} completate, €${ut.toLocaleString('it-IT')} preventivi, guadagno 35%: €${Math.round(ut*0.8*0.35).toLocaleString('it-IT')}`;
-    }).join('\n');
-    context = `L'utente è AMMINISTRATORE: ${sess.username}
-Data oggi: ${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
-Aziende totali: ${dati.length} | Completate: ${compAll} | Preventivi globali: €${totAll.toLocaleString('it-IT')}
-I tuoi appuntamenti oggi (${today}): ${evOggi.map(e=>`${e.ora} - ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join(', ')||'nessuno'}
-Tue aziende urgenti: ${urgenti.map(r=>`${r.nome_azienda} (${r.stato})`).join(', ')||'nessuna'}
-Tuoi preventivi completati: €${mioTot.toLocaleString('it-IT')} | Tuo 35%: €${mio35.toLocaleString('it-IT')}
-Riepilogo per operatore:\n${perUtente}`;
-  } else {
-    context = `L'utente è OPERATORE: ${sess.username}
-Data oggi: ${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
-Appuntamenti oggi: ${evOggi.map(e=>`${e.ora} - ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join(', ')||'nessuno'}
-Le TUE aziende: ${miei.length} totali | Completate: ${mieiComp.length} | Urgenti: ${urgenti.length}
-Aziende urgenti: ${urgenti.slice(0,5).map(r=>`${r.nome_azienda} (${r.stato})`).join(', ')||'nessuna'}
-Preventivi tuoi: €${mioTot.toLocaleString('it-IT')} | Il tuo guadagno 35%: €${mio35.toLocaleString('it-IT')}
-IMPORTANTE: rispondi solo sulle sue aziende, non mostrare dati di altri utenti.`;
+  // ── OGGI / COSA FARE ──
+  if (msg.includes('oggi') || msg.includes('fare') || msg.includes('giorno') || msg.includes('agenda')) {
+    if (isViewer) return `📅 Oggi è ${dataFmt}.
+
+Come visualizzatore non hai attività assegnate. Puoi consultare la tabella aziende per un riepilogo generale.`;
+
+    let risposta = `📅 **${dataFmt}**
+
+`;
+    if (evOggi.length > 0) {
+      risposta += `**🗓️ I tuoi appuntamenti oggi:**
+`;
+      risposta += evOggi.sort((a,b)=>(a.ora||'').localeCompare(b.ora||'')).map(e=>`• ${e.ora||'--:--'} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join('
+');
+      risposta += '
+
+';
+    } else {
+      risposta += '📭 Nessun appuntamento in agenda oggi.
+
+';
+    }
+    if (urgenti.length > 0) {
+      risposta += `**⚡ Da gestire (${urgenti.length}):**
+`;
+      risposta += urgenti.slice(0,4).map(r=>`• ${r.nome_azienda} → ${r.stato}`).join('
+');
+    }
+    return risposta || 'Tutto in ordine oggi! 🎉';
   }
 
-  const systemPrompt = `Sei un assistente commerciale intelligente per l'app EF Organizzazione Web (gestione acquisizione siti web).
-Rispondi in italiano, in modo conciso e pratico (max 5-6 righe). Usa emoji solo dove appropriato.
-Fornisci suggerimenti utili e concreti basati sui dati reali dell'utente.
+  // ── GUADAGNI / SOLDI ──
+  if (msg.includes('guadagn') || msg.includes('sold') || msg.includes('preventiv') || msg.includes('35%') || msg.includes('cifr')) {
+    if (isViewer) return 'I dati finanziari non sono accessibili per i visualizzatori.';
+    let r = `💰 **I tuoi guadagni**
 
-DATI AGGIORNATI:
-${context}`;
+`;
+    r += `• Siti completati: **${mieiComp.length}**
+`;
+    r += `• Preventivi totali: **€${mioTot.toLocaleString('it-IT')}**
+`;
+    r += `• Al netto del 20%: **€${Math.round(mioTot*0.8).toLocaleString('it-IT')}**
+`;
+    r += `• **Il tuo 35%: €${mio35.toLocaleString('it-IT')}** 🎯
+`;
+    r += `• Il tuo 75%: €${Math.round(mioTot*0.8*0.75).toLocaleString('it-IT')}`;
+    if (isAdmin) {
+      const totAll = dati.reduce((s,r2)=>s+(Number(r2.preventivo)||0),0);
+      r += `
 
-  try {
-    const messages = [...chatHistory.slice(-8)].filter(m=>m.role!=='assistant'||m.content.length<500);
-    messages.push({role:'user',content:msg});
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:500,
-        system:systemPrompt,
-        messages
-      })
-    });
-    loading.remove();
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    const data = await resp.json();
-    const text = data.content?.find(b=>b.type==='text')?.text || 'Non ho capito, riprova.';
-    addChatMsg(text,'bot');
-  } catch(e) {
-    loading.remove();
-    addChatMsg("L'AI funziona solo online.", "bot");
+📊 **Totale globale (admin):**
+• Preventivi totali: €${totAll.toLocaleString('it-IT')}
+• 35% globale: €${Math.round(totAll*0.8*0.35).toLocaleString('it-IT')}`;
+    }
+    return r;
   }
+
+  // ── AZIENDE ──
+  if (msg.includes('aziend') || msg.includes('client')) {
+    const dataSet = (isAdmin && (msg.includes('tutti') || msg.includes('totale') || msg.includes('tutto'))) ? dati : miei;
+    const label   = (isAdmin && msg.includes('tutti')) ? 'totali' : 'tue';
+    let r = `🏢 **Aziende ${label}: ${dataSet.length}**
+
+`;
+    const perStato = STATI.map(s=>({s,n:dataSet.filter(r2=>r2.stato===s.v).length})).filter(x=>x.n>0);
+    r += perStato.map(x=>`• ${x.s.v}: **${x.n}**`).join('
+');
+    return r;
+  }
+
+  // ── URGENTI ──
+  if (msg.includes('urgent') || msg.includes('richiamar') || msg.includes('contatt')) {
+    if (isViewer) return 'Le azioni urgenti non sono visibili per i visualizzatori.';
+    if (urgenti.length === 0) return '✅ Nessuna azione urgente al momento! Ottimo lavoro.';
+    let r = `⚡ **${urgenti.length} azioni urgenti:**
+
+`;
+    r += urgenti.slice(0,6).map(u=>`• **${u.nome_azienda}** — ${u.stato}`).join('
+');
+    return r;
+  }
+
+  // ── RECAP ──
+  if (msg.includes('recap') || msg.includes('riepilog') || msg.includes('situazion') || msg.includes('stato')) {
+    if (isViewer) {
+      return `📊 **Riepilogo sistema**
+
+Aziende totali: **${dati.length}**
+${STATI.map(s=>`• ${s.v}: ${dati.filter(r2=>r2.stato===s.v).length}`).filter(s=>!s.endsWith(': 0')).join('
+')}`;
+    }
+    let r = `📊 **Recap account — ${sess.username}**
+
+`;
+    r += `🏢 Le tue aziende: **${miei.length}** (${mieiComp.length} completate)
+`;
+    r += `⚡ Da gestire: **${urgenti.length}**
+`;
+    r += `📅 Appuntamenti oggi: **${evOggi.length}**
+`;
+    r += `💰 Il tuo 35%: **€${mio35.toLocaleString('it-IT')}**`;
+    if (isAdmin) {
+      const totAll = dati.reduce((s,r2)=>s+(Number(r2.preventivo)||0),0);
+      r += `
+
+👥 **Admin overview:**
+Aziende totali: ${dati.length} | Preventivi globali: €${totAll.toLocaleString('it-IT')}`;
+    }
+    return r;
+  }
+
+  // ── APPUNTAMENTI ──
+  if (msg.includes('appuntament') || msg.includes('calendar') || msg.includes('incontro') || msg.includes('chiamat')) {
+    if (isViewer) return 'Gli appuntamenti non sono accessibili per i visualizzatori.';
+    const evs = getEventi();
+    const prossimi = evs.filter(e=>e.data>=today).sort((a,b)=>a.data.localeCompare(b.data)||a.ora.localeCompare(b.ora)).slice(0,5);
+    if (prossimi.length===0) return '📅 Nessun appuntamento programmato nei prossimi giorni.
+
+Vai al Calendario per aggiungerne uno!';
+    let r = `📅 **Prossimi ${prossimi.length} appuntamenti:**
+
+`;
+    r += prossimi.map(e=>{
+      const d = new Date(e.data).toLocaleDateString('it-IT',{day:'numeric',month:'short'});
+      return `• **${d}** ${e.ora||''} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`;
+    }).join('
+');
+    return r;
+  }
+
+  // ── UTENTI (admin) ──
+  if (msg.includes('utent') || msg.includes('operator') || msg.includes('team')) {
+    if (!isAdmin) return 'Le informazioni sugli utenti sono riservate agli amministratori.';
+    let r = `👥 **Team (${users.length} utenti):**
+
+`;
+    r += users.map(u=>{
+      const ud = dati.filter(r2=>r2.aggiunto_da===u.username);
+      const uc = ud.filter(r2=>r2.stato==='✅ Sito completato');
+      return `• **${u.username}** (${u.role}) — ${ud.length} aziende, ${uc.length} completate`;
+    }).join('
+');
+    return r;
+  }
+
+  // ── AIUTO ──
+  if (msg.includes('aiuto') || msg.includes('help') || msg.includes('cosa puoi') || msg.includes('ciao') || msg.includes('help')) {
+    const cmds = isViewer 
+      ? ['📊 Recap account','🏢 Aziende totali']
+      : ['📅 Cosa faccio oggi?','💰 I miei guadagni','🏢 Le mie aziende','⚡ Aziende urgenti','📊 Recap account','📅 Prossimi appuntamenti'];
+    if (isAdmin) cmds.push('👥 Riepilogo team','🏢 Tutte le aziende');
+    return `👋 Ciao ${sess.username}! Sono il tuo assistente.
+
+Puoi chiedermi:
+${cmds.map(c=>`• ${c}`).join('
+')}`;
+  }
+
+  // Default
+  const suggerimenti = isViewer 
+    ? ['recap account','aziende totali']
+    : ['cosa faccio oggi','i miei guadagni','aziende urgenti','recap account'];
+  return `Non ho capito bene. Prova a chiedermi:
+${suggerimenti.map(s=>`• "${s}"`).join('
+')}`;
 }
+
 </script>
 
 <!-- CHAT WIDGET -->
