@@ -1529,7 +1529,7 @@ Scrivi un testo diretto e pratico per il commerciale. Focus sulle opportunità c
   } catch(e) {
     console.error(e);
     box.innerHTML = `<div style="color:var(--orange);font-size:12px;padding:8px;background:var(--orange-l);border-radius:6px">
-      <strong>Nota:</strong> L'AI funziona solo quando il sito è pubblicato online (GitHub Pages/Netlify). 
+      addChatMsg("L'AI funziona solo con il sito online (GitHub Pages/Netlify). In locale è bloccata dal browser.","bot"); 
       In locale il browser blocca le chiamate API per sicurezza (CORS).
     </div>`;
   }
