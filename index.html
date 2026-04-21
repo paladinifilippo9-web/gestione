@@ -2474,7 +2474,6 @@ function sendChat() {
     addChatMsg(risposta, 'bot');
   }, 400);
 }
-
 function elaboraRisposta(msg) {
   const isAdmin  = sess.role === 'admin';
   const isViewer = sess.role === 'viewer';
@@ -2487,171 +2486,107 @@ function elaboraRisposta(msg) {
   const evOggi   = isViewer ? [] : getEventi().filter(e=>e.data===today);
   const dataFmt  = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
 
-  // ── OGGI / COSA FARE ──
   if (msg.includes('oggi') || msg.includes('fare') || msg.includes('giorno') || msg.includes('agenda')) {
-    if (isViewer) return `📅 Oggi è ${dataFmt}.
-
-Come visualizzatore non hai attività assegnate. Puoi consultare la tabella aziende per un riepilogo generale.`;
-
-    let risposta = `📅 **${dataFmt}**
-
-`;
+    if (isViewer) return `📅 Oggi è ${dataFmt}.\n\nCome visualizzatore non hai attività assegnate. Puoi consultare la tabella aziende per un riepilogo generale.`;
+    let risposta = `📅 **${dataFmt}**\n\n`;
     if (evOggi.length > 0) {
-      risposta += `**🗓️ I tuoi appuntamenti oggi:**
-`;
-      risposta += evOggi.sort((a,b)=>(a.ora||'').localeCompare(b.ora||'')).map(e=>`• ${e.ora||'--:--'} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join('
-');
-      risposta += '
-
-';
+      risposta += `**🗓️ I tuoi appuntamenti oggi:**\n`;
+      risposta += evOggi.sort((a,b)=>(a.ora||'').localeCompare(b.ora||'')).map(e=>`• ${e.ora||'--:--'} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join('\n');
+      risposta += '\n\n';
     } else {
-      risposta += '📭 Nessun appuntamento in agenda oggi.
-
-';
+      risposta += '📭 Nessun appuntamento in agenda oggi.\n\n';
     }
     if (urgenti.length > 0) {
-      risposta += `**⚡ Da gestire (${urgenti.length}):**
-`;
-      risposta += urgenti.slice(0,4).map(r=>`• ${r.nome_azienda} → ${r.stato}`).join('
-');
+      risposta += `**⚡ Da gestire (${urgenti.length}):**\n`;
+      risposta += urgenti.slice(0,4).map(r=>`• ${r.nome_azienda} → ${r.stato}`).join('\n');
     }
     return risposta || 'Tutto in ordine oggi! 🎉';
   }
 
-  // ── GUADAGNI / SOLDI ──
   if (msg.includes('guadagn') || msg.includes('sold') || msg.includes('preventiv') || msg.includes('35%') || msg.includes('cifr')) {
     if (isViewer) return 'I dati finanziari non sono accessibili per i visualizzatori.';
-    let r = `💰 **I tuoi guadagni**
-
-`;
-    r += `• Siti completati: **${mieiComp.length}**
-`;
-    r += `• Preventivi totali: **€${mioTot.toLocaleString('it-IT')}**
-`;
-    r += `• Al netto del 20%: **€${Math.round(mioTot*0.8).toLocaleString('it-IT')}**
-`;
-    r += `• **Il tuo 35%: €${mio35.toLocaleString('it-IT')}** 🎯
-`;
+    let r = `💰 **I tuoi guadagni**\n\n`;
+    r += `• Siti completati: **${mieiComp.length}**\n`;
+    r += `• Preventivi totali: **€${mioTot.toLocaleString('it-IT')}**\n`;
+    r += `• Al netto del 20%: **€${Math.round(mioTot*0.8).toLocaleString('it-IT')}**\n`;
+    r += `• **Il tuo 35%: €${mio35.toLocaleString('it-IT')}** 🎯\n`;
     r += `• Il tuo 75%: €${Math.round(mioTot*0.8*0.75).toLocaleString('it-IT')}`;
     if (isAdmin) {
       const totAll = dati.reduce((s,r2)=>s+(Number(r2.preventivo)||0),0);
-      r += `
-
-📊 **Totale globale (admin):**
-• Preventivi totali: €${totAll.toLocaleString('it-IT')}
-• 35% globale: €${Math.round(totAll*0.8*0.35).toLocaleString('it-IT')}`;
+      r += `\n\n📊 **Totale globale (admin):**\n• Preventivi totali: €${totAll.toLocaleString('it-IT')}\n• 35% globale: €${Math.round(totAll*0.8*0.35).toLocaleString('it-IT')}`;
     }
     return r;
   }
 
-  // ── AZIENDE ──
   if (msg.includes('aziend') || msg.includes('client')) {
     const dataSet = (isAdmin && (msg.includes('tutti') || msg.includes('totale') || msg.includes('tutto'))) ? dati : miei;
     const label   = (isAdmin && msg.includes('tutti')) ? 'totali' : 'tue';
-    let r = `🏢 **Aziende ${label}: ${dataSet.length}**
-
-`;
+    let r = `🏢 **Aziende ${label}: ${dataSet.length}**\n\n`;
     const perStato = STATI.map(s=>({s,n:dataSet.filter(r2=>r2.stato===s.v).length})).filter(x=>x.n>0);
-    r += perStato.map(x=>`• ${x.s.v}: **${x.n}**`).join('
-');
+    r += perStato.map(x=>`• ${x.s.v}: **${x.n}**`).join('\n');
     return r;
   }
 
-  // ── URGENTI ──
   if (msg.includes('urgent') || msg.includes('richiamar') || msg.includes('contatt')) {
     if (isViewer) return 'Le azioni urgenti non sono visibili per i visualizzatori.';
     if (urgenti.length === 0) return '✅ Nessuna azione urgente al momento! Ottimo lavoro.';
-    let r = `⚡ **${urgenti.length} azioni urgenti:**
-
-`;
-    r += urgenti.slice(0,6).map(u=>`• **${u.nome_azienda}** — ${u.stato}`).join('
-');
+    let r = `⚡ **${urgenti.length} azioni urgenti:**\n\n`;
+    r += urgenti.slice(0,6).map(u=>`• **${u.nome_azienda}** — ${u.stato}`).join('\n');
     return r;
   }
 
-  // ── RECAP ──
   if (msg.includes('recap') || msg.includes('riepilog') || msg.includes('situazion') || msg.includes('stato')) {
     if (isViewer) {
-      return `📊 **Riepilogo sistema**
-
-Aziende totali: **${dati.length}**
-${STATI.map(s=>`• ${s.v}: ${dati.filter(r2=>r2.stato===s.v).length}`).filter(s=>!s.endsWith(': 0')).join('
-')}`;
+      return `📊 **Riepilogo sistema**\n\nAziende totali: **${dati.length}**\n${STATI.map(s=>`• ${s.v}: ${dati.filter(r2=>r2.stato===s.v).length}`).filter(s=>!s.endsWith(': 0')).join('\n')}`;
     }
-    let r = `📊 **Recap account — ${sess.username}**
-
-`;
-    r += `🏢 Le tue aziende: **${miei.length}** (${mieiComp.length} completate)
-`;
-    r += `⚡ Da gestire: **${urgenti.length}**
-`;
-    r += `📅 Appuntamenti oggi: **${evOggi.length}**
-`;
+    let r = `📊 **Recap account — ${sess.username}**\n\n`;
+    r += `🏢 Le tue aziende: **${miei.length}** (${mieiComp.length} completate)\n`;
+    r += `⚡ Da gestire: **${urgenti.length}**\n`;
+    r += `📅 Appuntamenti oggi: **${evOggi.length}**\n`;
     r += `💰 Il tuo 35%: **€${mio35.toLocaleString('it-IT')}**`;
     if (isAdmin) {
       const totAll = dati.reduce((s,r2)=>s+(Number(r2.preventivo)||0),0);
-      r += `
-
-👥 **Admin overview:**
-Aziende totali: ${dati.length} | Preventivi globali: €${totAll.toLocaleString('it-IT')}`;
+      r += `\n\n👥 **Admin overview:**\nAziende totali: ${dati.length} | Preventivi globali: €${totAll.toLocaleString('it-IT')}`;
     }
     return r;
   }
 
-  // ── APPUNTAMENTI ──
   if (msg.includes('appuntament') || msg.includes('calendar') || msg.includes('incontro') || msg.includes('chiamat')) {
     if (isViewer) return 'Gli appuntamenti non sono accessibili per i visualizzatori.';
     const evs = getEventi();
     const prossimi = evs.filter(e=>e.data>=today).sort((a,b)=>a.data.localeCompare(b.data)||a.ora.localeCompare(b.ora)).slice(0,5);
-    if (prossimi.length===0) return `📅 Nessun appuntamento programmato nei prossimi giorni.
-
-Vai al Calendario per aggiungerne uno!`;
-    let r = `📅 **Prossimi ${prossimi.length} appuntamenti:**
-
-`;
+    if (prossimi.length===0) return '📅 Nessun appuntamento programmato nei prossimi giorni.\n\nVai al Calendario per aggiungerne uno!';
+    let r = `📅 **Prossimi ${prossimi.length} appuntamenti:**\n\n`;
     r += prossimi.map(e=>{
       const d = new Date(e.data).toLocaleDateString('it-IT',{day:'numeric',month:'short'});
       return `• **${d}** ${e.ora||''} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`;
-    }).join('
-');
+    }).join('\n');
     return r;
   }
 
-  // ── UTENTI (admin) ──
   if (msg.includes('utent') || msg.includes('operator') || msg.includes('team')) {
     if (!isAdmin) return 'Le informazioni sugli utenti sono riservate agli amministratori.';
-    let r = `👥 **Team (${users.length} utenti):**
-
-`;
+    let r = `👥 **Team (${users.length} utenti):**\n\n`;
     r += users.map(u=>{
       const ud = dati.filter(r2=>r2.aggiunto_da===u.username);
       const uc = ud.filter(r2=>r2.stato==='✅ Sito completato');
       return `• **${u.username}** (${u.role}) — ${ud.length} aziende, ${uc.length} completate`;
-    }).join('
-');
+    }).join('\n');
     return r;
   }
 
-  // ── AIUTO ──
   if (msg.includes('aiuto') || msg.includes('help') || msg.includes('cosa puoi') || msg.includes('ciao') || msg.includes('help')) {
     const cmds = isViewer 
       ? ['📊 Recap account','🏢 Aziende totali']
       : ['📅 Cosa faccio oggi?','💰 I miei guadagni','🏢 Le mie aziende','⚡ Aziende urgenti','📊 Recap account','📅 Prossimi appuntamenti'];
     if (isAdmin) cmds.push('👥 Riepilogo team','🏢 Tutte le aziende');
-    return `👋 Ciao ${sess.username}! Sono il tuo assistente.
-
-Puoi chiedermi:
-${cmds.map(c=>`• ${c}`).join('
-')}`;
+    return `👋 Ciao ${sess.username}! Sono il tuo assistente.\n\nPuoi chiedermi:\n${cmds.map(c=>`• ${c}`).join('\n')}`;
   }
 
-  // Default
   const suggerimenti = isViewer 
     ? ['recap account','aziende totali']
     : ['cosa faccio oggi','i miei guadagni','aziende urgenti','recap account'];
-  return `Non ho capito bene. Prova a chiedermi:
-${suggerimenti.map(s=>`• "${s}"`).join('
-')}`;
+  return `Non ho capito bene. Prova a chiedermi:\n${suggerimenti.map(s=>`• "${s}"`).join('\n')}`;
 }
 
 </script>
