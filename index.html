@@ -2603,9 +2603,9 @@ Aziende totali: ${dati.length} | Preventivi globali: €${totAll.toLocaleString(
     if (isViewer) return 'Gli appuntamenti non sono accessibili per i visualizzatori.';
     const evs = getEventi();
     const prossimi = evs.filter(e=>e.data>=today).sort((a,b)=>a.data.localeCompare(b.data)||a.ora.localeCompare(b.ora)).slice(0,5);
-    if (prossimi.length===0) return '📅 Nessun appuntamento programmato nei prossimi giorni.
+    if (prossimi.length===0) return `📅 Nessun appuntamento programmato nei prossimi giorni.
 
-Vai al Calendario per aggiungerne uno!';
+Vai al Calendario per aggiungerne uno!`;
     let r = `📅 **Prossimi ${prossimi.length} appuntamenti:**
 
 `;
