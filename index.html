@@ -95,7 +95,9 @@ body.cursor-dark.cursor-hover #cursor-ring { border-color: rgba(147,187,252,.7);
 
 html{font-size:14px}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;cursor:none}
-a,button,select,input,textarea,[onclick]{cursor:none}
+a,button,select,[onclick]{cursor:none}
+input{cursor:text}
+textarea{cursor:text}
 
 /* LOGIN */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);position:relative;overflow:hidden}
@@ -366,7 +368,7 @@ tr:hover .row-actions{opacity:1}
 .bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
 
 /* LOADING OVERLAY */
-#loading{position:fixed;inset:0;background:var(--ink);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+#loading{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .3s}
 .ld-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;color:#fff;letter-spacing:-.03em;display:flex;align-items:center;gap:12px}
 .ld-logo span{color:var(--accent)}
 .ld-tagline{font-size:13px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase}
@@ -479,7 +481,7 @@ tr:hover .row-actions{opacity:1}
 </div>
 
 <!-- LOGIN -->
-<div id="login-screen" style="display:none">
+<div id="login-screen" style="display:none" class="login-screen-el">
   <div class="login-bg"></div>
   <div class="login-grid"></div>
   <div class="login-card">
@@ -1237,12 +1239,29 @@ async function bootApp() {
 
 // ── INIT ──────────────────────────────────────────────
 // Ogni apertura del sito richiede login — non si ripristina mai la sessione
-window.addEventListener('load', async () => {
-  await new Promise(r => setTimeout(r, 700));
-  document.getElementById('loading').style.display = 'none';
-  sess = null;
-  localStorage.removeItem('webcrm_sess_v3');
-  document.getElementById('login-screen').style.display = 'flex';
+window.addEventListener('load', () => {
+  function showLogin() {
+    const ld = document.getElementById('loading');
+    const ls = document.getElementById('login-screen');
+    if (ld) { ld.style.opacity='0'; setTimeout(()=>ld.style.display='none',300); }
+    if (ls) ls.style.display = 'flex';
+    sess = null;
+  }
+  // Aspetta 800ms per splash, poi mostra login
+  setTimeout(showLogin, 800);
+  // Fallback sicurezza: dopo 4 secondi mostra comunque il login
+  setTimeout(showLogin, 4000);
+});
+
+// Cattura errori JS globali e mostra login comunque
+window.addEventListener('error', (e) => {
+  console.error('JS Error:', e.message);
+  const ld = document.getElementById('loading');
+  const ls = document.getElementById('login-screen');
+  if (ld && ld.style.display !== 'none') {
+    ld.style.display = 'none';
+    if (ls) ls.style.display = 'flex';
+  }
 });
 
 // ── NAV ───────────────────────────────────────────────
