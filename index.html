@@ -386,6 +386,82 @@ tr:hover .row-actions{opacity:1}
   .sb-footer{padding:8px}.sb-footer-btns{gap:4px}.sb-fbtn span{display:none}.content{padding:16px}
   .fg,.fg3{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}.topbar{padding:0 16px}
 }
+
+/* ── CALENDAR DARK THEME ──────────────────────────── */
+.cal-week-grid{display:grid;grid-template-columns:52px repeat(7,1fr)}
+.cal-week-header{display:grid;grid-template-columns:52px repeat(7,1fr);background:var(--ink);border-bottom:2px solid rgba(255,255,255,.1)}
+.cal-week-day-hdr{padding:10px 6px;text-align:center;border-left:1px solid rgba(255,255,255,.08)}
+.cal-week-day-hdr .day-name{font-size:9px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em}
+.cal-week-day-hdr .day-num{font-size:22px;font-weight:800;color:rgba(255,255,255,.75);line-height:1.1;margin-top:2px;font-family:'Outfit',sans-serif}
+.cal-week-day-hdr.today .day-num{color:var(--accent);text-shadow:0 0 12px rgba(26,86,232,.4)}
+.cal-week-day-hdr.today{background:rgba(26,86,232,.12)}
+.cal-hour-label{padding:0 8px;font-size:9px;color:rgba(14,15,17,.35);font-family:'JetBrains Mono',monospace;text-align:right;height:52px;display:flex;align-items:flex-start;padding-top:5px;border-top:1px solid var(--paper3);background:var(--paper)}
+.cal-hour-cell{border-left:1px solid var(--paper3);border-top:1px solid var(--paper3);height:52px;position:relative;transition:background .12s;background:var(--white)}
+.cal-hour-cell:hover{background:rgba(26,86,232,.04)}
+.cal-hour-cell.weekend{background:var(--paper)}
+.cal-hour-cell.weekend:hover{background:rgba(26,86,232,.04)}
+.cal-event{position:absolute;left:2px;right:2px;min-height:20px;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border-radius:5px;padding:3px 7px;font-size:10px;font-weight:600;overflow:hidden;cursor:none;z-index:2;box-shadow:0 2px 8px rgba(26,86,232,.3);border-left:2px solid rgba(255,255,255,.4)}
+.cal-event:hover{filter:brightness(1.08);box-shadow:0 3px 12px rgba(26,86,232,.4)}
+.cal-now-line{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:3;pointer-events:none}
+.cal-now-line::before{content:'';width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;left:-4px;top:-3px}
+.cal-month-cell{min-height:90px;border:1px solid var(--paper3);border-top:none;border-left:none;padding:6px;cursor:none;transition:background .1s;background:var(--white)}
+.cal-month-cell:hover{background:var(--paper)}
+.cal-month-cell.weekend{background:var(--paper)}
+.cal-month-cell.other-month{background:var(--paper2);opacity:.6}
+
+/* ── CHAT WIDGET ──────────────────────────────────── */
+#chat-bubble{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:linear-gradient(135deg,var(--accent),#3B82F6);border-radius:50%;border:none;cursor:none;z-index:8000;box-shadow:0 4px 20px rgba(26,86,232,.4);display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .2s,box-shadow .2s}
+#chat-bubble:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(26,86,232,.5)}
+#chat-bubble.has-unreads::after{content:'';width:10px;height:10px;background:#EF4444;border-radius:50%;position:absolute;top:2px;right:2px;border:2px solid #fff}
+#chat-panel{position:fixed;bottom:88px;right:24px;width:360px;height:520px;background:var(--white);border-radius:var(--r-xl);box-shadow:0 20px 60px rgba(14,15,17,.18),0 4px 16px rgba(14,15,17,.1);z-index:7999;display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.4,0,.2,1);border:1px solid var(--paper3)}
+#chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.chat-header{background:linear-gradient(135deg,var(--ink),#1B2838);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.chat-avatar{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#60A5FA);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-header-info{flex:1}
+.chat-header-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.chat-header-status{font-size:10px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:4px}
+.chat-status-dot{width:5px;height:5px;background:#22C55E;border-radius:50%}
+.chat-close{background:none;border:none;color:rgba(255,255,255,.45);font-size:18px;cursor:none;padding:0;line-height:1;transition:color .15s}
+.chat-close:hover{color:#fff}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.chat-msg{max-width:82%;padding:10px 13px;border-radius:14px;font-size:12.5px;line-height:1.55}
+.chat-msg.bot{background:var(--white);color:var(--ink);border:1px solid var(--paper3);border-bottom-left-radius:4px;align-self:flex-start;box-shadow:var(--shadow-sm)}
+.chat-msg.user{background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.chat-msg.loading{background:var(--white);border:1px solid var(--paper3);align-self:flex-start}
+.chat-msg .chat-time{font-size:9px;opacity:.5;margin-top:4px;display:block}
+.chat-input-area{padding:10px 12px;border-top:1px solid var(--paper3);display:flex;gap:8px;background:var(--white);flex-shrink:0}
+.chat-input{flex:1;padding:9px 13px;border:1.5px solid var(--paper3);border-radius:var(--r-lg);font-family:inherit;font-size:13px;outline:none;transition:border .15s;background:var(--paper);color:var(--ink)}
+.chat-input:focus{border-color:var(--accent);background:#fff}
+.chat-send{padding:9px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-lg);cursor:none;font-size:14px;transition:background .15s;flex-shrink:0}
+.chat-send:hover{background:var(--accent-d)}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:5px;padding:6px 12px 0;background:var(--white)}
+.chat-sug{padding:5px 11px;background:var(--paper2);border:1px solid var(--paper3);border-radius:20px;font-size:11px;color:var(--ink2);cursor:none;transition:all .15s;font-family:inherit}
+.chat-sug:hover{background:var(--accent-l);border-color:rgba(26,86,232,.25);color:var(--accent)}
+
+/* ── MOBILE RESPONSIVE ────────────────────────────── */
+@media(max-width:768px){
+  .sidebar{width:60px;min-width:60px}
+  .sb-logo-name,.sb-item span,.sb-user-name,.sb-user-role,.sb-user-badge,.sb-section,.sb-fbtn span,.rt-lbl{display:none!important}
+  .sb-header{padding:12px 8px}.sb-logo{justify-content:center}.sb-user{justify-content:center}
+  .sb-nav{padding:8px 6px}.sb-item{justify-content:center;padding:10px}.sb-item .bc{display:none}
+  .sb-footer{padding:8px 6px;gap:4px}.content{padding:12px}
+  .fg,.fg3{grid-template-columns:1fr!important}.stats-grid{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 12px}.topbar-sub{display:none}
+  .topbar-right .btn-ghost{display:none}
+  [style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:1fr 1fr!important}
+  .kanban{flex-direction:column}.k-col{min-width:unset;max-width:unset}
+  #chat-panel{width:calc(100vw - 24px);right:12px;bottom:80px}
+  #chat-bubble{right:12px;bottom:12px}
+  .modal{padding:20px;margin:12px}
+  .cal-week-day-hdr .day-num{font-size:16px}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .topbar-title{font-size:14px}
+  #chat-panel{height:80vh}
+}
 </style>
 </head>
 <body>
@@ -547,9 +623,16 @@ tr:hover .row-actions{opacity:1}
             </div>
             <div style="overflow:auto"><table><thead><tr><th>Azienda</th><th>Settore</th><th>Stato</th><th>Contatto</th></tr></thead><tbody id="tbody-rec"></tbody></table></div>
           </div>
-          <div class="card" style="margin-bottom:0">
-            <div class="card-header"><span class="card-title">Azioni urgenti</span></div>
-            <div id="urgenti" style="padding:12px 16px"></div>
+          <div class="card" style="margin-bottom:0;overflow:hidden">
+            <div class="card-header" style="padding:10px 14px">
+              <div style="display:flex;gap:5px">
+                <button class="dash-tab active" id="dtab-urgenti" onclick="dashTab('urgenti')">⚡ Urgenti</button>
+                <button class="dash-tab" id="dtab-oggi" onclick="dashTab('oggi')">📅 Oggi</button>
+              </div>
+              <button class="btn btn-ghost btn-xs" id="dash-auto-btn" onclick="toggleDashAuto()" title="Auto">▶</button>
+            </div>
+            <div id="dash-panel-urgenti" style="padding:12px 14px"></div>
+            <div id="dash-panel-oggi" style="padding:12px 14px;display:none"></div>
           </div>
         </div>
         <div class="card">
@@ -782,11 +865,11 @@ tr:hover .row-actions{opacity:1}
           <button class="btn btn-ghost btn-sm" onclick="calNext()">Successivo →</button>
         </div>
         <!-- Vista settimanale -->
-        <div id="cal-week-view" class="card" style="overflow:hidden"></div>
+        <div id="cal-week-view" style="border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--paper3);box-shadow:var(--shadow)"></div>
         <!-- Vista mensile -->
-        <div id="cal-month-view" class="card" style="overflow:hidden;display:none">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);background:var(--paper);border-bottom:1px solid var(--paper3)" id="cal-month-header"></div>
-          <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr)"></div>
+        <div id="cal-month-view" style="border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--paper3);box-shadow:var(--shadow);display:none">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);background:var(--ink);border-bottom:2px solid rgba(255,255,255,.1)" id="cal-month-header"></div>
+          <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);background:var(--white)"></div>
         </div>
       </div>
 
@@ -1255,29 +1338,32 @@ function renderDash() {
 
 // ── DASHBOARD WIDGET SCORRIMENTO ──────────────────────
 function renderDashPanel(which) {
-  document.getElementById('dash-panel-urgenti').style.display = which==='urgenti'?'block':'none';
-  document.getElementById('dash-panel-oggi').style.display    = which==='oggi'?'block':'none';
-  document.getElementById('dtab-urgenti').classList.toggle('active', which==='urgenti');
-  document.getElementById('dtab-oggi').classList.toggle('active', which==='oggi');
+  const pu = document.getElementById('dash-panel-urgenti');
+  const po = document.getElementById('dash-panel-oggi');
+  const tu = document.getElementById('dtab-urgenti');
+  const to = document.getElementById('dtab-oggi');
+  if (!pu || !po) return;
+  pu.style.display = which==='urgenti' ? 'block' : 'none';
+  po.style.display = which==='oggi'    ? 'block' : 'none';
+  if (tu) tu.classList.toggle('active', which==='urgenti');
+  if (to) to.classList.toggle('active', which==='oggi');
 
   if (which === 'urgenti') {
-    const urg = dati.filter(r=>['🔴 Da contattare','🔁 Da richiamare','🟠 Incontro fissato'].includes(r.stato)).slice(0,5);
-    document.getElementById('dash-panel-urgenti').innerHTML = urg.length
+    const urg = dati.filter(r=>['🔴 Da contattare','🔁 Da richiamare','🟠 Incontro fissato'].includes(r.stato)).slice(0,6);
+    pu.innerHTML = urg.length
       ? urg.map(r=>`<div onclick="openAzienda('${r.id}')" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--paper2);cursor:none"><div style="flex:1"><div style="font-size:12px;font-weight:500">${r.nome_azienda}</div><div style="font-size:11px;color:var(--ink3)">${r.settore||''}</div></div>${bS(r.stato)}</div>`).join('')
       : '<div style="text-align:center;padding:20px;font-size:13px;color:var(--ink4)">Nessuna azione urgente 🎉</div>';
   } else {
-    // Oggi dal calendario
     const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-    const evs = getEventi ? getEventi().filter(e=>e.data===todayStr) : [];
+    const todayStr = today.toISOString().split('T')[0];
+    const evs = (typeof getEventi === 'function') ? getEventi().filter(e=>e.data===todayStr) : [];
     const label = today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
-    document.getElementById('dash-panel-oggi').innerHTML = `<div style="font-size:11px;color:var(--ink3);margin-bottom:8px;text-transform:capitalize">${label}</div>` +
+    po.innerHTML = `<div style="font-size:11px;color:var(--ink3);margin-bottom:8px;text-transform:capitalize">${label}</div>` +
       (evs.length
-        ? evs.map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--paper2)"><div style="background:var(--accent-l);color:var(--accent);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;white-space:nowrap">${e.ora||'—'}</div><div><div style="font-size:12px;font-weight:500">${e.titolo}</div>${e.azienda?`<div style="font-size:11px;color:var(--ink3)">${e.azienda}</div>`:''}</div></div>`).join('')
+        ? evs.sort((a,b)=>(a.ora||'00').localeCompare(b.ora||'00')).map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--paper2)"><div style="background:var(--accent-l);color:var(--accent);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;min-width:42px;text-align:center">${e.ora||'—'}</div><div><div style="font-size:12px;font-weight:500">${e.titolo}</div>${e.azienda?`<div style="font-size:11px;color:var(--ink3)">${e.azienda}</div>`:''}</div></div>`).join('')
         : '<div style="text-align:center;padding:20px;font-size:13px;color:var(--ink4)">Nessun incontro oggi 📭</div>');
   }
 }
-
 function dashTab(which) {
   stopDashAuto();
   renderDashPanel(which);
@@ -1395,34 +1481,41 @@ async function generaRiassunto() {
   const r = dati.find(x=>String(x.id)===String(currentAziendaId));
   if (!r) return;
   const box = document.getElementById('mod-az-ai');
-  box.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:4px">Analisi in corso…</span></div>';
+  box.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Analisi in corso…</span></div>';
 
-  const prompt = `Sei un assistente commerciale per un'agenzia web. Analizza queste informazioni sull'azienda e scrivi un breve riassunto strategico in italiano (massimo 4-5 righe) su come approcciarla, i punti di forza della proposta e cosa evidenziare nella vendita.
+  const prompt = `Sei un assistente commerciale per un'agenzia web italiana. Analizza le informazioni sull'azienda e scrivi un riassunto pratico in italiano (4-5 righe max) su come approcciarla, cosa proporre e come chiudere la vendita.
 
 Azienda: ${r.nome_azienda||'—'}
-Settore: ${r.settore||'—'}
-Stato: ${r.stato||'—'}
-Note: ${r.note||'nessuna nota'}
+Settore: ${r.settore||'non specificato'}
+Stato pipeline: ${r.stato||'non specificato'}
+Note operative: ${r.note||'nessuna nota'}
+Referente: ${r.referente||'non specificato'}
 
-Scrivi un testo diretto, pratico e utile per il commerciale che deve contattare o incontrare questa azienda.`;
+Scrivi un testo diretto e pratico per il commerciale. Focus sulle opportunità concrete basate sulle note.`;
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        messages:[{role:'user',content:prompt}]
       })
     });
+    if (!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
-    const text = data.content?.find(b=>b.type==='text')?.text || 'Nessuna risposta generata.';
-    box.innerHTML = text.replace(/\n/g,'<br>');
+    const text = data.content?.find(b=>b.type==='text')?.text || 'Nessuna risposta.';
+    box.innerHTML = '<div style="line-height:1.7">'+text.replace(/\n\n/g,'</div><div style="line-height:1.7;margin-top:8px">').replace(/\n/g,'<br>')+'</div>';
   } catch(e) {
-    box.innerHTML = '<span style="color:var(--red)">Errore nella generazione. Verifica la connessione.</span>';
+    console.error(e);
+    box.innerHTML = `<div style="color:var(--orange);font-size:12px;padding:8px;background:var(--orange-l);border-radius:6px">
+      <strong>Nota:</strong> L'AI funziona solo quando il sito è pubblicato online (GitHub Pages/Netlify). 
+      In locale il browser blocca le chiamate API per sicurezza (CORS).
+    </div>`;
   }
 }
+
 
 // ── CALENDARIO ────────────────────────────────────────
 let calMode = 'week'; // 'week' | 'month'
@@ -1469,35 +1562,39 @@ function renderCalWeek() {
   const evs   = getEventi();
   const today = new Date(); today.setHours(0,0,0,0);
   const days  = [];
-  for (let i=0;i<7;i++) {
-    const d = new Date(calWeekStart); d.setDate(d.getDate()+i); days.push(d);
-  }
-  const weekEnd = new Date(calWeekStart); weekEnd.setDate(weekEnd.getDate()+6);
-  const fmt = d=>d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
-  document.getElementById('cal-title').textContent = `${fmt(calWeekStart)} — ${fmt(weekEnd)} ${calWeekStart.getFullYear()}`;
+  for (let i=0;i<7;i++) { const d=new Date(calWeekStart); d.setDate(d.getDate()+i); days.push(d); }
+  const wEnd = new Date(calWeekStart); wEnd.setDate(wEnd.getDate()+6);
+  const fmt  = d=>d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
+  document.getElementById('cal-title').textContent = `${fmt(calWeekStart)} — ${fmt(wEnd)} ${calWeekStart.getFullYear()}`;
   document.getElementById('cal-sub').textContent = 'Vista settimanale';
 
-  // Intestazione giorni
+  // Header
   let html = `<div class="cal-week-header">
-    <div style="border-right:1px solid var(--paper3)"></div>
-    ${days.map(d=>{
+    <div style="border-right:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:rgba(255,255,255,.25);font-weight:600">ORE</span></div>
+    ${days.map((d,i)=>{
       const isT = d.toDateString()===today.toDateString();
-      const gIdx = (d.getDay()+6)%7;
-      return `<div class="cal-week-day-hdr ${isT?'today':''}">
-        <div class="day-name">${GIORNI_IT[gIdx]}</div>
+      const dayN = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'][(d.getDay()+6)%7];
+      return `<div class="cal-week-day-hdr${isT?' today':''}">
+        <div class="day-name">${dayN}</div>
         <div class="day-num">${d.getDate()}</div>
       </div>`;
     }).join('')}
   </div>`;
 
-  // Griglia ore 7-21
-  html += '<div class="cal-week-grid">';
+  // Ora corrente
+  const nowH = new Date().getHours(), nowM = new Date().getMinutes();
+  const isCurrentWeek = days.some(d=>d.toDateString()===today.toDateString());
+
+  html += '<div class="cal-week-grid" style="overflow-y:auto;max-height:520px">';
   for (let h=7;h<=21;h++) {
     html += `<div class="cal-hour-label">${String(h).padStart(2,'0')}:00</div>`;
-    days.forEach(d=>{
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      const hEvs   = evs.filter(e=>e.data===dateStr && e.ora && parseInt(e.ora)===h);
-      html += `<div class="cal-hour-cell" onclick="openEventModal('${dateStr}','${String(h).padStart(2,'0')}:00')">
+    days.forEach((d,di)=>{
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const hEvs = evs.filter(e=>e.data===ds && e.ora && parseInt(e.ora)===h);
+      const isWknd = di>=5 ? ' weekend':'';
+      const isNow  = isCurrentWeek && d.toDateString()===today.toDateString() && h===nowH;
+      html += `<div class="cal-hour-cell${isWknd}" onclick="openEventModal('${ds}','${String(h).padStart(2,'0')}:00')">
+        ${isNow?`<div class="cal-now-line" style="top:${nowM/60*52}px"></div>`:''}
         ${hEvs.map(e=>`<div class="cal-event" onclick="event.stopPropagation();editEvento('${e.id}')" title="${e.titolo}">${e.ora} ${e.titolo}</div>`).join('')}
       </div>`;
     });
@@ -1507,32 +1604,39 @@ function renderCalWeek() {
 }
 
 function renderCalMonth() {
-  const evs = getEventi();
+  const evs   = getEventi();
   const today = new Date(); today.setHours(0,0,0,0);
   document.getElementById('cal-title').textContent = `${MESI_IT[calMonth]} ${calYear}`;
   document.getElementById('cal-sub').textContent = 'Vista mensile';
 
-  document.getElementById('cal-month-header').innerHTML = GIORNI_IT.map(d=>
-    `<div style="padding:10px;text-align:center;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">${d}</div>`
+  document.getElementById('cal-month-header').innerHTML = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].map(d=>
+    `<div style="padding:12px 8px;text-align:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em">${d}</div>`
   ).join('');
 
   const firstDay = new Date(calYear,calMonth,1).getDay();
   const offset   = (firstDay+6)%7;
   const dim      = new Date(calYear,calMonth+1,0).getDate();
   let cells = '';
-  for (let i=0;i<offset;i++) cells+=`<div style="min-height:80px;border:1px solid var(--paper3);background:var(--paper2);border-top:none;border-left:none"></div>`;
+
+  for (let i=0;i<offset;i++) cells+=`<div class="cal-month-cell other-month"></div>`;
   for (let d=1;d<=dim;d++) {
-    const ds  = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dEvs= evs.filter(e=>e.data===ds);
-    const isT = (new Date(calYear,calMonth,d).toDateString()===today.toDateString());
-    cells += `<div onclick="showMonthDay('${ds}')" style="min-height:80px;border:1px solid var(--paper3);border-top:none;border-left:none;padding:6px;cursor:none;transition:background .1s" onmouseover="this.style.background='var(--paper2)'" onmouseout="this.style.background=''">
-      <div style="font-size:12px;font-weight:${isT?'700':'500'};margin-bottom:4px;${isT?`width:22px;height:22px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;`:''}">${d}</div>
-      ${dEvs.slice(0,3).map(e=>`<div style="background:var(--accent);color:#fff;border-radius:4px;padding:2px 5px;font-size:10px;font-weight:500;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.ora||''} ${e.titolo}</div>`).join('')}
-      ${dEvs.length>3?`<div style="font-size:10px;color:var(--ink3)">+${dEvs.length-3}</div>`:''}
+    const ds   = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dEvs = evs.filter(e=>e.data===ds);
+    const dt   = new Date(calYear,calMonth,d);
+    const isT  = dt.toDateString()===today.toDateString();
+    const isWk = dt.getDay()===0||dt.getDay()===6;
+    cells += `<div class="cal-month-cell${isWk?' weekend':''}" onclick="showMonthDay('${ds}')">
+      <div style="font-size:12px;font-weight:${isT?'800':'500'};margin-bottom:4px">
+        ${isT
+          ? `<span style="background:var(--accent);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${d}</span>`
+          : `<span style="color:${isWk?'var(--ink3)':'var(--ink2)'}">${d}</span>`}
+      </div>
+      ${dEvs.slice(0,3).map(e=>`<div style="background:linear-gradient(135deg,var(--accent),#3B82F6);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.ora?e.ora+' ':''}${e.titolo}</div>`).join('')}
+      ${dEvs.length>3?`<div style="font-size:10px;color:var(--ink3);padding-left:2px">+${dEvs.length-3} altri</div>`:''}
     </div>`;
   }
   const rem = (offset+dim)%7;
-  if (rem>0) for (let i=0;i<7-rem;i++) cells+=`<div style="min-height:80px;border:1px solid var(--paper3);background:var(--paper2);border-top:none;border-left:none"></div>`;
+  if (rem>0) for (let i=0;i<7-rem;i++) cells+=`<div class="cal-month-cell other-month"></div>`;
   document.getElementById('cal-grid').innerHTML = cells;
 }
 
@@ -1638,7 +1742,7 @@ function renderTab() {
     const canEdit   = isAdmin || (isUser && isOwner);
     const canDelete = isAdmin;
     const showPrev  = sess && sess.role !== 'viewer';
-    return `<tr>
+    return `<tr onclick="openAzienda('${r.id}')" style="cursor:none">
     <td class="td-muted">${r.settore || '—'}</td>
     <td class="td-bold">${r.nome_azienda || '—'}</td>
     <td class="td-mono" style="font-size:11.5px">${r.telefono_email || '<span style="color:var(--ink4)">—</span>'}</td>
@@ -1661,7 +1765,7 @@ function renderTab() {
 function renderPipeline() {
   document.getElementById('kanban').innerHTML = STATI.map(s => {
     const items = dati.filter(r => r.stato === s.v);
-    return `<div class="k-col"><div class="k-head"><span class="k-head-label">${s.v}</span><span class="k-cnt">${items.length}</span></div><div class="k-body">${items.length ? items.map(r => `<div class="k-card"><div class="k-card-name">${r.nome_azienda}</div><div class="k-card-sect">${r.settore || ''}</div>${r.preventivo ? `<div class="k-card-price">€ ${Number(r.preventivo).toLocaleString('it-IT')}</div>` : ''}</div>`).join('') : '<div class="k-empty">Vuoto</div>'}</div></div>`;
+    return `<div class="k-col"><div class="k-head"><span class="k-head-label">${s.v}</span><span class="k-cnt">${items.length}</span></div><div class="k-body">${items.length ? items.map(r => `<div class="k-card" onclick="openAzienda(''${r.id}'')" ><div class="k-card-name">${r.nome_azienda}</div><div class="k-card-sect">${r.settore || ''}</div>${r.preventivo ? `<div class="k-card-price">€ ${Number(r.preventivo).toLocaleString('it-IT')}</div>` : ''}</div>`).join('') : '<div class="k-empty">Vuoto</div>'}</div></div>`;
   }).join('');
 }
 
@@ -2144,6 +2248,154 @@ function toast(msg, type = 'ok') {
   t.classList.add('show');
   tTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// ── CHAT WIDGET ───────────────────────────────────────
+let chatOpen = false;
+let chatHistory = [];
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-panel').classList.toggle('open', chatOpen);
+  document.getElementById('chat-bubble').classList.remove('has-unreads');
+  if (chatOpen && chatHistory.length === 0) {
+    // Messaggio di benvenuto
+    const ora = new Date().getHours();
+    const sal = ora < 12 ? 'Buongiorno' : ora < 18 ? 'Buon pomeriggio' : 'Buonasera';
+    const ruolo = sess.role === 'admin' ? 'amministratore' : sess.role === 'viewer' ? 'visualizzatore' : 'operatore';
+    addChatMsg(`${sal} ${sess.username}! 👋 Sono il tuo assistente EF. Sono connesso ai tuoi dati in tempo reale.
+
+Come ${ruolo} posso aiutarti con: aziende, appuntamenti, guadagni e tanto altro. Cosa vuoi sapere?`, 'bot');
+  }
+}
+
+function addChatMsg(text, type) {
+  const msgs = document.getElementById('chat-messages');
+  const time = new Date().toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `chat-msg ${type}`;
+  div.innerHTML = text.replace(/\n/g,'<br>') + `<span class="chat-time">${time}</span>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  chatHistory.push({role: type==='user'?'user':'assistant', content: text});
+}
+
+function chatSug(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+async function sendChat() {
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  addChatMsg(msg, 'user');
+
+  // Loading
+  const msgs = document.getElementById('chat-messages');
+  const loading = document.createElement('div');
+  loading.className = 'chat-msg loading';
+  loading.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  msgs.appendChild(loading);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Costruisci contesto dati in base al ruolo
+  const isAdmin  = sess.role === 'admin';
+  const isViewer = sess.role === 'viewer';
+  const today    = new Date().toISOString().split('T')[0];
+  const miei     = dati.filter(r => r.aggiunto_da === sess.username);
+  const mieiComp = miei.filter(r => r.stato === '✅ Sito completato');
+  const mioTot   = mieiComp.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
+  const mio35    = Math.round(mioTot*0.8*0.35);
+  const evOggi   = isViewer ? [] : (typeof getEventi==='function' ? getEventi().filter(e=>e.data===today) : []);
+  const urgenti  = miei.filter(r=>['🔴 Da contattare','🔁 Da richiamare','🟠 Incontro fissato'].includes(r.stato));
+
+  let context = '';
+  if (isViewer) {
+    context = `L'utente è un VISUALIZZATORE. Può solo vedere riepilogo aziende totali.
+Aziende totali nel sistema: ${dati.length}
+Suddivisione per stato: ${STATI.map(s=>`${s.v}: ${dati.filter(r=>r.stato===s.v).length}`).join(', ')}`;
+  } else if (isAdmin) {
+    const totAll = dati.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
+    const compAll = dati.filter(r=>r.stato==='✅ Sito completato').length;
+    const perUtente = users.filter(u=>u.role!=='viewer').map(u=>{
+      const ud = dati.filter(r=>r.aggiunto_da===u.username);
+      const uc = ud.filter(r=>r.stato==='✅ Sito completato');
+      const ut = uc.reduce((s,r)=>s+(Number(r.preventivo)||0),0);
+      return `${u.username}: ${ud.length} aziende totali, ${uc.length} completate, €${ut.toLocaleString('it-IT')} preventivi, guadagno 35%: €${Math.round(ut*0.8*0.35).toLocaleString('it-IT')}`;
+    }).join('\n');
+    context = `L'utente è AMMINISTRATORE: ${sess.username}
+Data oggi: ${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+Aziende totali: ${dati.length} | Completate: ${compAll} | Preventivi globali: €${totAll.toLocaleString('it-IT')}
+I tuoi appuntamenti oggi (${today}): ${evOggi.map(e=>`${e.ora} - ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join(', ')||'nessuno'}
+Tue aziende urgenti: ${urgenti.map(r=>`${r.nome_azienda} (${r.stato})`).join(', ')||'nessuna'}
+Tuoi preventivi completati: €${mioTot.toLocaleString('it-IT')} | Tuo 35%: €${mio35.toLocaleString('it-IT')}
+Riepilogo per operatore:\n${perUtente}`;
+  } else {
+    context = `L'utente è OPERATORE: ${sess.username}
+Data oggi: ${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+Appuntamenti oggi: ${evOggi.map(e=>`${e.ora} - ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join(', ')||'nessuno'}
+Le TUE aziende: ${miei.length} totali | Completate: ${mieiComp.length} | Urgenti: ${urgenti.length}
+Aziende urgenti: ${urgenti.slice(0,5).map(r=>`${r.nome_azienda} (${r.stato})`).join(', ')||'nessuna'}
+Preventivi tuoi: €${mioTot.toLocaleString('it-IT')} | Il tuo guadagno 35%: €${mio35.toLocaleString('it-IT')}
+IMPORTANTE: rispondi solo sulle sue aziende, non mostrare dati di altri utenti.`;
+  }
+
+  const systemPrompt = `Sei un assistente commerciale intelligente per l'app EF Organizzazione Web (gestione acquisizione siti web).
+Rispondi in italiano, in modo conciso e pratico (max 5-6 righe). Usa emoji solo dove appropriato.
+Fornisci suggerimenti utili e concreti basati sui dati reali dell'utente.
+
+DATI AGGIORNATI:
+${context}`;
+
+  try {
+    const messages = [...chatHistory.slice(-8)].filter(m=>m.role!=='assistant'||m.content.length<500);
+    messages.push({role:'user',content:msg});
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        system:systemPrompt,
+        messages
+      })
+    });
+    loading.remove();
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const data = await resp.json();
+    const text = data.content?.find(b=>b.type==='text')?.text || 'Non ho capito, riprova.';
+    addChatMsg(text,'bot');
+  } catch(e) {
+    loading.remove();
+    addChatMsg('L'AI funziona solo con il sito online (GitHub Pages/Netlify). In locale è bloccata dal browser.','bot');
+  }
+}
 </script>
+
+<!-- CHAT WIDGET -->
+<button id="chat-bubble" onclick="toggleChat()" title="Assistente AI">🤖</button>
+<div id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Assistente EF</div>
+      <div class="chat-header-status"><span class="chat-status-dot"></span> Online</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-suggestions" id="chat-sugs">
+    <button class="chat-sug" onclick="chatSug(this.textContent)">📅 Cosa faccio oggi?</button>
+    <button class="chat-sug" onclick="chatSug(this.textContent)">💰 I miei guadagni</button>
+    <button class="chat-sug" onclick="chatSug(this.textContent)">🏢 Aziende urgenti</button>
+    <button class="chat-sug" onclick="chatSug(this.textContent)">📊 Recap account</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-area">
+    <input type="text" class="chat-input" id="chat-input" placeholder="Scrivi un messaggio…" onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
 </body>
 </html>
