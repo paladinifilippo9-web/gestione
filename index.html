@@ -2493,27 +2493,17 @@ function elaboraRisposta(msg) {
 
 Come visualizzatore non hai attività assegnate. Puoi consultare la tabella aziende per un riepilogo generale.`;
 
-    let risposta = `📅 **${dataFmt}**
-
-`;
+    let risposta = `📅 **${dataFmt}**\n\n`;
     if (evOggi.length > 0) {
-      risposta += `**🗓️ I tuoi appuntamenti oggi:**
-`;
-      risposta += evOggi.sort((a,b)=>(a.ora||'').localeCompare(b.ora||'')).map(e=>`• ${e.ora||'--:--'} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join('
-');
-      risposta += '
-
-';
+      risposta += `**🗓️ I tuoi appuntamenti oggi:**\n`;
+      risposta += evOggi.sort((a,b)=>(a.ora||'').localeCompare(b.ora||'')).map(e=>`• ${e.ora||'--:--'} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`).join('\n');
+      risposta += '\n\n';
     } else {
-      risposta += '📭 Nessun appuntamento in agenda oggi.
-
-';
+      risposta += '📭 Nessun appuntamento in agenda oggi.\n\n';
     }
     if (urgenti.length > 0) {
-      risposta += `**⚡ Da gestire (${urgenti.length}):**
-`;
-      risposta += urgenti.slice(0,4).map(r=>`• ${r.nome_azienda} → ${r.stato}`).join('
-');
+      risposta += `**⚡ Da gestire (${urgenti.length}):**\n`;
+      risposta += urgenti.slice(0,4).map(r=>`• ${r.nome_azienda} → ${r.stato}`).join('\n');
     }
     return risposta || 'Tutto in ordine oggi! 🎉';
   }
