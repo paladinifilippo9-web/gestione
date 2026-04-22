@@ -2538,7 +2538,7 @@ Come visualizzatore non hai attività assegnate. Puoi consultare la tabella azie
     if (isViewer) return 'Le azioni urgenti non sono visibili per i visualizzatori.';
     if (urgenti.length === 0) return '✅ Nessuna azione urgente al momento! Ottimo lavoro.';
     let r = `⚡ **${urgenti.length} azioni urgenti:**\n\n`;
-    r += urgenti.slice(0,6).map(u=>`• **${u.nome_azienda}** — ${u.stato}`).join('\n');
+    r += urgenti.slice(0,10).map(u=>`**${u.nome_azienda}**\n📁 ${u.settore||'—'} | ${u.stato}\n📱 ${u.telefono_email||'—'}\n👤 ${u.referente||'—'}${u.note ? `\n📝 ${u.note.substring(0,60)}...` : ''}`).join('\n\n');
     return r;
   }
 
@@ -2571,6 +2571,38 @@ Come visualizzatore non hai attività assegnate. Puoi consultare la tabella azie
       return `• **${d}** ${e.ora||''} — ${e.tipo==='chiamata'?'📞':'🤝'} ${e.titolo}${e.azienda?' ('+e.azienda+')':''}`;
     }).join('\n');
     return r;
+  }
+
+  // ── RICERCA PER STATO SPECIFICO ──
+  if ((msg.includes('completat') || msg.includes('realizzat') || msg.includes('interessat') || msg.includes('contattate') || msg.includes('rifiutate') || msg.includes('sospese')) && !msg.includes('oggi')) {
+    const statiMap = {
+      'completat': '✅ Sito completato',
+      'realizzat': '🔵 Sito da realizzare',
+      'interessat': '🟢 Interessata',
+      'contattate': '🟡 Contattata',
+      'rifiutate': '⚫ Non interessata',
+      'sospese': '🟤 Non ha risposto',
+      'da contattare': '🔴 Da contattare',
+      'richiamare': '🔁 Da richiamare',
+      'incontro': '🟠 Incontro fissato'
+    };
+    
+    let statoTarget = null;
+    for (let key in statiMap) {
+      if (msg.includes(key)) {
+        statoTarget = statiMap[key];
+        break;
+      }
+    }
+    
+    if (statoTarget) {
+      const dataSet = isAdmin ? dati.filter(r => r.stato === statoTarget) : miei.filter(r => r.stato === statoTarget);
+      if (dataSet.length === 0) return `Nessuna azienda con stato "${statoTarget.replace(/^[🔴🟡🟢🔵⚫🟤🟠✅]/,'').trim()}".`;
+      
+      let r = `${statoTarget} **Aziende con stato "${statoTarget.replace(/^[🔴🟡🟢🔵⚫🟤🟠✅]/,'').trim()}" (${dataSet.length}):**\n\n`;
+      r += dataSet.slice(0,15).map((az,i)=>`${i+1}. **${az.nome_azienda}**\n   📁 ${az.settore||'—'} | 💰 €${az.preventivo||'0'}\n   📱 ${az.telefono_email||'—'}\n   👤 ${az.referente||'—'}${az.note ? `\n   📝 ${az.note.substring(0,50)}...` : ''}`).join('\n\n');
+      return r;
+    }
   }
 
   // ── RICERCA AZIENDA SPECIFICA ──
@@ -2613,6 +2645,35 @@ Come visualizzatore non hai attività assegnate. Puoi consultare la tabella azie
       return `• **${az.nome_azienda}** (${az.settore})\n  📱 ${telefono}\n  👤 ${az.referente||'—'}`;
     }).join('\n\n');
     return r;
+  }
+
+  // ── AZIENDE DI UN UTENTE SPECIFICO (admin) ──
+  if (isAdmin && users.length > 0) {
+    for (let u of users) {
+      if (msg.includes(u.username.toLowerCase())) {
+        const userAziende = dati.filter(r => r.aggiunto_da === u.username);
+        
+        // Se specifica uno stato
+        let stateFilter = null;
+        if (msg.includes('completat')) stateFilter = '✅ Sito completato';
+        else if (msg.includes('urgent') || msg.includes('richiamar')) stateFilter = ['🔴 Da contattare','🔁 Da richiamare'];
+        else if (msg.includes('interessat')) stateFilter = '🟢 Interessata';
+        else if (msg.includes('realizzat')) stateFilter = '🔵 Sito da realizzare';
+        
+        const filtered = stateFilter 
+          ? userAziende.filter(r => Array.isArray(stateFilter) ? stateFilter.includes(r.stato) : r.stato === stateFilter)
+          : userAziende;
+        
+        if (filtered.length === 0) {
+          const stato = stateFilter ? ` con stato "${Array.isArray(stateFilter) ? 'urgente' : stateFilter.replace(/^[🔴🟡🟢🔵⚫🟤🟠✅]/,'').trim()}"` : '';
+          return `Nessuna azienda${stato} per ${u.username}.`;
+        }
+        
+        let r = `👤 **Aziende di ${u.username}** (${u.role}) — ${filtered.length}:\n\n`;
+        r += filtered.slice(0,12).map((az,i)=>`${i+1}. **${az.nome_azienda}**\n   ${az.stato} | 📁 ${az.settore||'—'}\n   💰 €${az.preventivo||'0'} | 📱 ${az.telefono_email||'—'}\n   👤 ${az.referente||'—'}${az.note ? `\n   📝 ${az.note.substring(0,50)}...` : ''}`).join('\n\n');
+        return r;
+      }
+    }
   }
 
   // ── UTENTI (admin) ──
