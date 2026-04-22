@@ -1942,7 +1942,7 @@ function renderTab() {
 function renderPipeline() {
   document.getElementById('kanban').innerHTML = STATI.map(s => {
     const items = dati.filter(r => r.stato === s.v);
-    return `<div class="k-col"><div class="k-head"><span class="k-head-label">${s.v}</span><span class="k-cnt">${items.length}</span></div><div class="k-body">${items.length ? items.map(r => `<div class="k-card" onclick="openAzienda(''${r.id}'')" ><div class="k-card-name">${r.nome_azienda}</div><div class="k-card-sect">${r.settore || ''}</div>${r.preventivo ? `<div class="k-card-price">€ ${Number(r.preventivo).toLocaleString('it-IT')}</div>` : ''}</div>`).join('') : '<div class="k-empty">Vuoto</div>'}</div></div>`;
+    return `<div class="k-col"><div class="k-head"><span class="k-head-label">${s.v}</span><span class="k-cnt">${items.length}</span></div><div class="k-body">${items.length ? items.map(r => `<div class="k-card" onclick="openAzienda('${r.id}')" ><div class="k-card-name">${r.nome_azienda}</div><div class="k-card-sect">${r.settore || ''}</div>${r.preventivo ? `<div class="k-card-price">€ ${Number(r.preventivo).toLocaleString('it-IT')}</div>` : ''}</div>`).join('') : '<div class="k-empty">Vuoto</div>'}</div></div>`;
   }).join('');
 }
 
@@ -2439,9 +2439,8 @@ function toggleChat() {
     const ora = new Date().getHours();
     const sal = ora < 12 ? 'Buongiorno' : ora < 18 ? 'Buon pomeriggio' : 'Buonasera';
     const ruolo = sess.role === 'admin' ? 'amministratore' : sess.role === 'viewer' ? 'visualizzatore' : 'operatore';
-    addChatMsg(`${sal} ${sess.username}! 👋 Sono il tuo assistente EF. Sono connesso ai tuoi dati in tempo reale.
-
-Come ${ruolo} posso aiutarti con: aziende, appuntamenti, guadagni e tanto altro. Cosa vuoi sapere?`, 'bot');
+    const urgentiCnt = (sess.role === 'viewer' ? 0 : dati.filter(r => r.aggiunto_da === sess.username && ['🔴 Da contattare','🔁 Da richiamare'].includes(r.stato)).length);
+    addChatMsg(`${sal} ${sess.username}! 👋 Sono il tuo assistente EF.\n\nSono connesso ai tuoi dati in tempo reale come ${ruolo}. ${urgentiCnt > 0 ? `📞 Hai ${urgentiCnt} contatti urgenti!` : ''}\n\nChiedimi di: aziende, appuntamenti, guadagni, statistiche, contatti... o scrivi "aiuto" per i comandi!`, 'bot');
   }
 }
 
@@ -2574,6 +2573,48 @@ Come visualizzatore non hai attività assegnate. Puoi consultare la tabella azie
     return r;
   }
 
+  // ── RICERCA AZIENDA SPECIFICA ──
+  if (msg.includes('cerca') || msg.includes('azienda') && (msg.length < 50 && msg.split(' ').length <= 5)) {
+    const searchTerm = msg.replace(/cerca|azienda|specifica/gi,'').trim().toLowerCase();
+    if (searchTerm.length > 2) {
+      const found = dati.filter(r => (r.nome_azienda||'').toLowerCase().includes(searchTerm) || (r.settore||'').toLowerCase().includes(searchTerm));
+      if (found.length === 0) {
+        return `🔍 Nessuna azienda trovata con "${searchTerm}".\n\nProva a cercare per nome azienda o settore.`;
+      }
+      let r = `🔍 **Trovate ${found.length} aziende:**\n\n`;
+      r += found.slice(0,8).map(az=>`• **${az.nome_azienda}** (${az.settore}) — ${az.stato||'—'}`).join('\n');
+      return r;
+    }
+  }
+
+  // ── STATISTICHE DETTAGLIATE ──
+  if (msg.includes('statistic') || msg.includes('analisi') || msg.includes('dati') || msg.includes('performance')) {
+    if (isViewer) return 'Le statistiche dettagliate non sono accessibili per i visualizzatori.';
+    const completate = miei.filter(r => r.stato === '✅ Sito completato');
+    const inProgresso = miei.filter(r => ['🔵 Sito da realizzare','🟠 Incontro fissato'].includes(r.stato));
+    const percentuale = miei.length > 0 ? Math.round(completate.length / miei.length * 100) : 0;
+    let r = `📈 **Statistiche personali:**\n\n`;
+    r += `• Totale aziende: **${miei.length}**\n`;
+    r += `• Completate: **${completate.length}** (${percentuale}%)\n`;
+    r += `• In progresso: **${inProgresso.length}**\n`;
+    r += `• Guadagni totali: **€${mioTot.toLocaleString('it-IT')}**\n`;
+    r += `• Tuo 35%: **€${mio35.toLocaleString('it-IT')} 🎯**`;
+    return r;
+  }
+
+  // ── CONTATTI URGENTI ──
+  if (msg.includes('contatti') || msg.includes('richiamare') || msg.includes('priorit')) {
+    if (isViewer) return 'I contatti urgenti non sono accessibili per i visualizzatori.';
+    const contattiUrgenti = miei.filter(r => ['🔴 Da contattare','🔁 Da richiamare'].includes(r.stato));
+    if (contattiUrgenti.length === 0) return '✅ Nessun contatto urgente! Tutte le aziende sono state contattate.';
+    let r = `📞 **Contatti urgenti (${contattiUrgenti.length}):**\n\n`;
+    r += contattiUrgenti.slice(0,5).map(az=>{
+      const telefono = az.telefono_email ? `${az.telefono_email}` : '—';
+      return `• **${az.nome_azienda}** (${az.settore})\n  📱 ${telefono}\n  👤 ${az.referente||'—'}`;
+    }).join('\n\n');
+    return r;
+  }
+
   // ── UTENTI (admin) ──
   if (msg.includes('utent') || msg.includes('operator') || msg.includes('team')) {
     if (!isAdmin) return 'Le informazioni sugli utenti sono riservate agli amministratori.';
@@ -2589,17 +2630,17 @@ Come visualizzatore non hai attività assegnate. Puoi consultare la tabella azie
   // ── AIUTO ──
   if (msg.includes('aiuto') || msg.includes('help') || msg.includes('cosa puoi') || msg.includes('ciao') || msg.includes('help')) {
     const cmds = isViewer 
-      ? ['📊 Recap account','🏢 Aziende totali']
-      : ['📅 Cosa faccio oggi?','💰 I miei guadagni','🏢 Le mie aziende','⚡ Aziende urgenti','📊 Recap account','📅 Prossimi appuntamenti'];
+      ? ['📊 Recap account','🏢 Aziende totali','📈 Statistiche']
+      : ['📅 Cosa faccio oggi?','💰 I miei guadagni','🏢 Le mie aziende','⚡ Aziende urgenti','📞 Contatti urgenti','📊 Recap account','📅 Prossimi appuntamenti','📈 Statistiche'];
     if (isAdmin) cmds.push('👥 Riepilogo team','🏢 Tutte le aziende');
-    return `👋 Ciao ${sess.username}! Sono il tuo assistente.\n\nPuoi chiedermi:\n${cmds.map(c=>`• ${c}`).join('\n')}`;
+    return `👋 Ciao ${sess.username}! Sono il tuo assistente EF.\n\nPuoi chiedermi:\n${cmds.map(c=>`• ${c}`).join('\n')}\n\nOppure puoi scrivere il nome di un'azienda per cercarla!`;
   }
 
   // Default
   const suggerimenti = isViewer 
-    ? ['recap account','aziende totali']
-    : ['cosa faccio oggi','i miei guadagni','aziende urgenti','recap account'];
-  return `Non ho capito bene. Prova a chiedermi:\n${suggerimenti.map(s=>`• "${s}"`).join('\n')}`;
+    ? ['cosa succede oggi','aziende totali','statistiche']
+    : ['cosa faccio oggi','i miei guadagni','contatti urgenti','statistiche personali','aziende completate'];
+  return `Non ho capito bene 🤔. Prova a chiedermi:\n${suggerimenti.map(s=>`• "${s}"`).join('\n')}`;
 }
 
 </script>
